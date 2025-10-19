@@ -1,6 +1,6 @@
 # Secure Notarial Document Delivery Platform - MVP
 
-A web-based platform for notaries to securely authenticate, upload, and deliver certified PDF documents to clients.
+A blokchain secure web-based platform for notaries to securely authenticate, upload, and deliver certified PDF documents to clients.
 
 ---
 
