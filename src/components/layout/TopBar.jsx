@@ -1,0 +1,113 @@
+import { useState } from 'react';
+
+const TopBar = () => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  return (
+    <div className="bg-white border-b border-gray-200 px-8 py-4">
+      <div className="flex items-center justify-between">
+        {/* Greeting Section */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Hello, Carlic!</h1>
+          <p className="text-sm text-gray-500">Manage notarized documents and track validation status</p>
+        </div>
+
+        {/* Right Section - Search, Notifications, Profile */}
+        <div className="flex items-center gap-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-80 pl-4 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+            />
+            <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2 rounded-lg hover:bg-gray-800 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Messages/Chat Button */}
+          <button className="relative p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          {/* Notifications Button */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-2 border-b border-gray-200">
+                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                    <p className="text-sm font-medium text-gray-900">Document validated successfully</p>
+                    <p className="text-xs text-gray-500 mt-1">Contract_Agreement.pdf • 2 minutes ago</p>
+                  </div>
+                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                    <p className="text-sm font-medium text-gray-900">New document pending review</p>
+                    <p className="text-xs text-gray-500 mt-1">Property_Deed.pdf • 1 hour ago</p>
+                  </div>
+                  <div className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                    <p className="text-sm font-medium text-gray-900">Client registered</p>
+                    <p className="text-xs text-gray-500 mt-1">Emily Davis joined • 3 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* User Profile */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProfile(!showProfile)}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-semibold text-sm">CB</span>
+              </div>
+            </button>
+
+            {showProfile && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <a href="/dashboard/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  Profile
+                </a>
+                <a href="/dashboard/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  Settings
+                </a>
+                <hr className="my-2" />
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('isAuthenticated');
+                    window.location.href = '/login';
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TopBar;
+
