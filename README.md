@@ -20,7 +20,7 @@ A blokchain secure web-based platform for notaries to securely authenticate, upl
 - **Node.js**: Version 23.x or higher
 - **npm**: Version 10.x or higher
 - **Git**: For version control
-- **Modern Web Browser**: Chrome, Firefox, Safari, or Edge (latest versions)
+- **Modern Web Browser**: Chrome, Firefox, Safari, or Edge
 
 ### Local Development Setup
 
