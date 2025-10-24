@@ -3,6 +3,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
+import AdminSignup from './pages/auth/AdminSignup';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
 import Clients from './pages/Clients';
@@ -17,6 +18,7 @@ function App() {
         {/* Public Routes - Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/admin/signup" element={<AdminSignup />} />
         
         {/* Protected Routes - Dashboard */}
         <Route path="/dashboard" element={

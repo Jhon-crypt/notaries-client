@@ -217,11 +217,17 @@ const Login = () => {
             </form>
 
             {/* Sign Up Link */}
-            <div className="mt-8 text-center">
+            <div className="mt-8 text-center space-y-2">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
                 <Link to="/signup" className="text-green-600 hover:text-green-700 font-semibold">
-                  Sign up as a Notary
+                  Sign up
+                </Link>
+              </p>
+              <p className="text-xs text-gray-500">
+                Administrator?{' '}
+                <Link to="/admin/signup" className="text-purple-600 hover:text-purple-700 font-semibold">
+                  Register as Admin
                 </Link>
               </p>
             </div>

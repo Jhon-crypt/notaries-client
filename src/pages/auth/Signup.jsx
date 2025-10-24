@@ -9,7 +9,7 @@ const Signup = () => {
     fullName: '',
     email: '',
     phone: '',
-    role: 'notary', // 'notary', 'client', or 'admin'
+    role: 'notary', // 'notary' or 'client'
     
     // Step 2: Notary Information (only for notaries)
     licenseNumber: '',
@@ -27,8 +27,8 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Skip step 2 if user is not a notary
-    if (step === 1 && formData.role !== 'notary') {
+    // Skip step 2 if user is a client (not notary)
+    if (step === 1 && formData.role === 'client') {
       setStep(3);
     } else if (step < 3) {
       setStep(step + 1);
@@ -52,7 +52,7 @@ const Signup = () => {
   };
 
   const handleBack = () => {
-    if (step === 3 && formData.role !== 'notary') {
+    if (step === 3 && formData.role === 'client') {
       setStep(1);
     } else if (step > 1) {
       setStep(step - 1);
@@ -79,31 +79,61 @@ const Signup = () => {
         {/* Progress Steps */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
           <div className="flex items-center justify-between mb-8">
-            {[1, 2, 3].map((stepNumber) => (
-              <div key={stepNumber} className="flex items-center flex-1">
-                <div className="flex flex-col items-center flex-1">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
-                    step >= stepNumber 
-                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
-                      : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {step > stepNumber ? (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : stepNumber}
+            {/* Show only 2 steps for clients and admins, 3 steps for notaries */}
+            {formData.role === 'notary' ? (
+              // Three steps for notaries
+              [1, 2, 3].map((stepNumber) => (
+                <div key={stepNumber} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center flex-1">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                      step >= stepNumber 
+                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
+                        : 'bg-gray-200 text-gray-500'
+                    }`}>
+                      {step > stepNumber ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : stepNumber}
+                    </div>
+                    <span className={`text-xs mt-2 font-medium ${step >= stepNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                      {stepNumber === 1 && 'Personal'}
+                      {stepNumber === 2 && 'Notary Info'}
+                      {stepNumber === 3 && 'Security'}
+                    </span>
                   </div>
-                  <span className={`text-xs mt-2 font-medium ${step >= stepNumber ? 'text-green-600' : 'text-gray-500'}`}>
-                    {stepNumber === 1 && 'Personal'}
-                    {stepNumber === 2 && 'Notary Info'}
-                    {stepNumber === 3 && 'Security'}
-                  </span>
+                  {stepNumber < 3 && (
+                    <div className={`flex-1 h-1 mx-2 rounded ${step > stepNumber ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+                  )}
                 </div>
-                {stepNumber < 3 && (
-                  <div className={`flex-1 h-1 mx-2 rounded ${step > stepNumber ? 'bg-green-600' : 'bg-gray-200'}`}></div>
-                )}
-              </div>
-            ))}
+              ))
+            ) : (
+              // Two steps for clients
+              [1, 3].map((stepNumber, index) => (
+                <div key={stepNumber} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center flex-1">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                      step >= stepNumber 
+                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
+                        : 'bg-gray-200 text-gray-500'
+                    }`}>
+                      {step > stepNumber ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : index + 1}
+                    </div>
+                    <span className={`text-xs mt-2 font-medium ${step >= stepNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                      {stepNumber === 1 && 'Personal'}
+                      {stepNumber === 3 && 'Security'}
+                    </span>
+                  </div>
+                  {index < 1 && (
+                    <div className={`flex-1 h-1 mx-2 rounded ${step > stepNumber ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,7 +149,7 @@ const Signup = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     I am registering as a *
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
                       onClick={() => setFormData({...formData, role: 'notary'})}
@@ -154,26 +184,6 @@ const Signup = () => {
                         </svg>
                         <span className={`text-sm font-medium ${formData.role === 'client' ? 'text-green-700' : 'text-gray-700'}`}>
                           Client
-                        </span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setFormData({...formData, role: 'admin'})}
-                      className={`p-4 border-2 rounded-lg transition-all ${
-                        formData.role === 'admin'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <svg className={`w-8 h-8 ${formData.role === 'admin' ? 'text-green-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span className={`text-sm font-medium ${formData.role === 'admin' ? 'text-green-700' : 'text-gray-700'}`}>
-                          Admin
                         </span>
                       </div>
                     </button>

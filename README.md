@@ -4,6 +4,15 @@ A blokchain secure web-based platform for notaries to securely authenticate, upl
 
 ---
 
+## Documentation
+
+📚 **Quick Navigation**
+- **[USER_GUIDE.md](./USER_GUIDE.md)** - Complete user documentation for all roles
+- **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Quick reference guide and cheat sheet
+- **[README.md](./README.md)** - Technical documentation (this file)
+
+---
+
 ## Table of Contents
 
 1. [Setup & Deployment Guide](#setup--deployment-guide)
@@ -781,16 +790,31 @@ All errors follow this format:
 
 ## User Documentation
 
-### Getting Started
+📖 **For complete user documentation, see [USER_GUIDE.md](./USER_GUIDE.md)**
+
+The User Guide provides comprehensive information including:
+- Detailed registration process for all user types
+- Dashboard features and navigation
+- Document management workflows
+- Security best practices
+- Troubleshooting tips
+
+### Quick Start Guide
 
 #### For Administrators
 
-1. **Initial Setup**
+1. **Registration**
+   - Navigate to `/admin/signup` (dedicated admin registration path)
+   - Enter administrator credentials
+   - Complete security setup
+   - Enable two-factor authentication (recommended)
+
+2. **Initial Setup**
    - Access the login page at your deployment URL
-   - Use admin credentials provided during setup
+   - Use admin credentials created during registration
    - Navigate to Settings to configure system parameters
 
-2. **User Management**
+3. **User Management**
    - View all registered users (notaries and clients)
    - Approve/reject notary applications
    - Manage user permissions
@@ -798,7 +822,7 @@ All errors follow this format:
 #### For Notaries
 
 1. **Registration**
-   - Visit the signup page
+   - Visit the signup page at `/signup`
    - Select "Notary" as your role
    - **Step 1**: Enter personal information (name, email, phone)
    - **Step 2**: Enter notary credentials:
@@ -814,159 +838,49 @@ All errors follow this format:
 2. **Login**
    - Enter your registered email and password
    - Click "Sign In"
-   - You'll be redirected to the dashboard
+   - Access dashboard features
 
-3. **Dashboard Overview**
-   - **Documents Validated**: Total PDFs you've certified this month
-   - **Pending Reviews**: Documents awaiting your certification
-   - **Document Activity Chart**: Shows validation trends
-   - **Recent Documents**: Quick access to latest uploads
-   - **Top Notaries**: See highest-rated notaries
-
-4. **Uploading & Certifying Documents**
-   
-   a. **Navigate to Documents Page**:
-      - Click "Documents" in the left sidebar
-   
-   b. **Start Upload**:
-      - Click "Upload & Certify PDF" button
-   
-   c. **Select PDF File**:
-      - Drag and drop your PDF file into the upload zone, OR
-      - Click "Select PDF File" to browse
-      - File must be:
-        - PDF format only
-        - Maximum 10MB size
-   
-   d. **Complete Certification**:
-      - Check the box: "I hereby certify that this PDF document is a true, accurate, and complete copy..."
-      - Select the original document type (Contract, Deed, Will, etc.)
-      - Add optional notes about the certification
-   
-   e. **Upload**:
-      - Click "Upload & Certify Document"
-      - Wait for validation and upload to complete
-      - Document appears in your documents list with "Pending" status
-
-5. **Managing Documents**
-   - **View**: Click "View" to see document details
-   - **Download**: Click "Download" to save a copy
-   - **Delete**: Click "Delete" to remove (if permitted)
-   - **Filter**: Use search box or status dropdown to find documents
-   - **Status Indicators**:
-     - Green badge: Verified
-     - Yellow badge: Pending review
-
-6. **Profile Management**
-   - Click your avatar in the top-right corner
-   - Select "Profile" to view/edit:
-     - Personal information
-     - Notary credentials
-     - Service zones
-     - Daily workload capacity
-   - Click "Settings" for:
-     - Password change
-     - Notification preferences
-     - Account settings
+3. **Key Features**
+   - Upload and certify PDF documents
+   - Manage client relationships
+   - Track document deliveries
+   - Configure service zones
+   - Monitor daily workload
 
 #### For Clients
 
 1. **Registration**
-   - Visit the signup page
+   - Visit the signup page at `/signup`
    - Select "Client" as your role
-   - Enter personal information (name, email, phone)
+   - Enter personal information
    - Create secure password
-   - Click "Create Account"
+   - Instant account activation
 
 2. **Login**
-   - Enter your registered email and password
-   - Click "Sign In"
+   - Enter credentials at `/login`
+   - Access your documents dashboard
 
-3. **Viewing Documents**
-   - Navigate to "Documents" page
-   - View documents certified for you
-   - Use search to find specific documents
-   - Filter by status (Verified/Pending)
+3. **Key Features**
+   - View and download certified documents
+   - Track document status
+   - Communicate with notaries
+   - Manage profile settings
 
-4. **Downloading Documents**
-   - Find your document in the list
-   - Click "Download" button
-   - PDF will be saved to your device
+### Application Routes
 
-### Dashboard Usage
+| Route | Purpose | Access |
+|-------|---------|--------|
+| `/login` | User authentication | Public |
+| `/signup` | Notary and Client registration | Public |
+| `/admin/signup` | Administrator registration | Public |
+| `/dashboard` | Main dashboard | Protected |
+| `/dashboard/documents` | Document management | Protected |
+| `/dashboard/clients` | Client management | Protected (Notary/Admin) |
+| `/dashboard/notaries` | Notary directory | Protected |
+| `/dashboard/settings` | System settings | Protected |
+| `/dashboard/profile` | User profile | Protected |
 
-#### Main Dashboard Components
-
-1. **Top Bar**
-   - **Search**: Find documents, notaries, or clients quickly
-   - **Messages**: View communication notifications
-   - **Notifications**: See system alerts and updates
-   - **User Menu**: Access profile, settings, and logout
-
-2. **Sidebar Navigation**
-   - **Dashboard**: Overview and statistics
-   - **Documents**: Upload and manage PDFs
-   - **Clients**: View client list (notaries only)
-   - **Notaries**: Browse notary directory
-   - **Calendar**: Schedule appointments (coming soon)
-   - **Settings**: System configuration
-   - **Profile**: User account details
-
-3. **KPI Cards** (Top of Dashboard)
-   - **Documents Validated**: Monthly total with percentage change
-   - **Pending Reviews**: Documents awaiting certification
-   - **Active Notaries**: Number with service zones covered
-   - **Registered Clients**: Total with recent additions
-
-4. **Document Activity Section**
-   - **Validation Rate**: Percentage of successfully validated documents
-   - **Avg. Processing Time**: Time to complete certifications
-   - **Activity Chart**: Visual trend of document processing
-   - **Success Rate**: Monthly validation success percentage
-
-5. **Recent Activity Sections**
-   - **Recent Documents**: Latest uploads with status
-   - **Top Notaries**: Highest-rated notaries with case counts
-   - **Security & Compliance**: System security status indicators
-
-### Delivery Tracking Overview
-
-1. **Document Status Flow**:
-   ```
-   Uploaded → Pending → Under Review → Verified/Rejected
-   ```
-
-2. **Tracking Features**:
-   - Real-time status updates
-   - Timestamp for each status change
-   - Notary assignment tracking
-   - Client delivery confirmation
-   - Download history
-
-3. **Notifications**:
-   - Document uploaded successfully
-   - Document certified
-   - Document assigned to client
-   - Document downloaded by client
-   - Status changes
-
-### Security Best Practices
-
-1. **Password Requirements**:
-   - Minimum 8 characters
-   - Mix of uppercase, lowercase, numbers, and special characters
-   - Change password every 90 days
-
-2. **Two-Factor Authentication** (when enabled):
-   - Enable in Settings → Security
-   - Use authenticator app (Google Authenticator, Authy)
-   - Backup codes provided during setup
-
-3. **File Security**:
-   - Only upload genuine, verified documents
-   - Never share your certification credentials
-   - Review document details before certifying
-   - Log out when done
+For detailed usage instructions, workflow examples, and best practices, please refer to the **[USER_GUIDE.md](./USER_GUIDE.md)**.
 
 ---
 
