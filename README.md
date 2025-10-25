@@ -109,6 +109,8 @@ npm run preview
 
 #### Option 1: Vercel Deployment
 
+**Important**: A `vercel.json` file is included in the project to handle client-side routing correctly and prevent 404 errors on page reloads.
+
 1. **Install Vercel CLI**:
 ```bash
 npm install -g vercel
@@ -122,6 +124,8 @@ vercel --prod
 3. **Configure Environment Variables**:
    - Go to Vercel Dashboard → Project Settings → Environment Variables
    - Add all variables from `.env` file
+
+**Note**: The `vercel.json` configuration rewrites all routes to `index.html`, allowing React Router to handle client-side routing properly. This prevents 404 errors when reloading pages or accessing routes directly.
 
 #### Option 2: Netlify Deployment
 
