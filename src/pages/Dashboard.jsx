@@ -1,16 +1,21 @@
 import { Link } from 'react-router-dom';
 import ClientDashboard from './ClientDashboard';
+import AdminDashboard from './AdminDashboard';
 
 const Dashboard = () => {
   // Get user role from localStorage
   const userRole = localStorage.getItem('userRole');
   
-  // If user is a client, show client-specific dashboard
+  // Route to appropriate dashboard based on role
   if (userRole === 'client') {
     return <ClientDashboard />;
   }
+  
+  if (userRole === 'admin') {
+    return <AdminDashboard />;
+  }
 
-  // Show admin/notary dashboard
+  // Show notary dashboard (default)
   return (
     <div className="space-y-6">
       {/* Top Summary Cards (KPI Row) */}
