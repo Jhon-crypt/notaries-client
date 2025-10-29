@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const AdminDashboard = () => {
+  const { t } = useLanguage();
   // Mock data for pending verifications
   const pendingNotaries = [
     { id: 1, name: 'Robert Johnson', email: 'robert.j@example.com', license: 'NOT-2024-045', state: 'CA', submittedDate: '2 hours ago' },
@@ -21,8 +23,8 @@ const AdminDashboard = () => {
       <div className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-2xl p-8 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Administrator Dashboard</h1>
-            <p className="text-purple-100">Manage users, verify notaries, and monitor system health</p>
+            <h1 className="text-3xl font-bold mb-2">{t('admin.administratorDashboard')}</h1>
+            <p className="text-purple-100">{t('admin.manageUsers')}</p>
           </div>
           <div className="hidden md:block">
             <svg className="w-20 h-20 text-purple-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,15 +46,15 @@ const AdminDashboard = () => {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-orange-900 mb-1">Pending Notary Verifications</h3>
+                <h3 className="text-lg font-semibold text-orange-900 mb-1">{t('admin.pendingVerifications')}</h3>
                 <p className="text-sm text-orange-700 mb-4">
-                  {pendingNotaries.length} new notary application{pendingNotaries.length !== 1 ? 's' : ''} awaiting your review and approval
+                  {pendingNotaries.length} {t('admin.applicationsAwaiting')}
                 </p>
                 <Link
                   to="/dashboard/notaries"
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
                 >
-                  Review Applications
+                  {t('admin.reviewApplications')}
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -73,11 +75,11 @@ const AdminDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </div>
-            <span className="text-xs text-purple-600 font-medium">+15 this week</span>
+            <span className="text-xs text-purple-600 font-medium">+15 {t('dashboard.thisWeek')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Total Users</p>
+          <p className="text-sm text-gray-500 mb-1">{t('admin.totalUsers')}</p>
           <h3 className="text-3xl font-bold text-gray-900">287</h3>
-          <p className="text-xs text-gray-400 mt-2">Across all roles</p>
+          <p className="text-xs text-gray-400 mt-2">{t('admin.acrossAllRoles')}</p>
         </div>
 
         {/* Active Notaries */}
@@ -88,11 +90,11 @@ const AdminDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <span className="text-xs text-green-600 font-medium">45 verified</span>
+            <span className="text-xs text-green-600 font-medium">45 {t('admin.verified')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Active Notaries</p>
+          <p className="text-sm text-gray-500 mb-1">{t('dashboard.activeNotaries')}</p>
           <h3 className="text-3xl font-bold text-gray-900">45</h3>
-          <p className="text-xs text-gray-400 mt-2">3 pending verification</p>
+          <p className="text-xs text-gray-400 mt-2">3 {t('admin.pendingVerification')}</p>
         </div>
 
         {/* Documents Processed */}
@@ -103,11 +105,11 @@ const AdminDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-xs text-blue-600 font-medium">+128 this month</span>
+            <span className="text-xs text-blue-600 font-medium">+128 {t('dashboard.thisMonth')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Documents Processed</p>
+          <p className="text-sm text-gray-500 mb-1">{t('admin.documentsProcessed')}</p>
           <h3 className="text-3xl font-bold text-gray-900">1,847</h3>
-          <p className="text-xs text-gray-400 mt-2">Total validated</p>
+          <p className="text-xs text-gray-400 mt-2">{t('admin.totalValidated')}</p>
         </div>
 
         {/* System Health */}
@@ -118,11 +120,11 @@ const AdminDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-xs text-emerald-600 font-medium">Optimal</span>
+            <span className="text-xs text-emerald-600 font-medium">{t('admin.optimal')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">System Health</p>
+          <p className="text-sm text-gray-500 mb-1">{t('admin.systemHealth')}</p>
           <h3 className="text-3xl font-bold text-gray-900">99.8%</h3>
-          <p className="text-xs text-gray-400 mt-2">Uptime this month</p>
+          <p className="text-xs text-gray-400 mt-2">{t('admin.uptimeThisMonth')}</p>
         </div>
       </div>
 
@@ -132,9 +134,9 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Pending Verifications</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('admin.pendingNotaryVerifications')}</h2>
               <Link to="/dashboard/notaries" className="text-sm text-purple-600 hover:text-purple-700 font-semibold">
-                View All
+                {t('common.viewAll')}
               </Link>
             </div>
           </div>

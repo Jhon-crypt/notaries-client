@@ -1,4 +1,13 @@
+import { en } from './en';
+import { es } from './es';
+
 export const translations = {
+  en: en,
+  es: es,
+};
+
+// Legacy format (will be replaced above)
+export const translationsOLD = {
   en: {
     // Common
     common: {
@@ -6,8 +15,11 @@ export const translations = {
       login: 'Login',
       logout: 'Logout',
       signup: 'Sign Up',
-      email: 'Email',
+      email: 'Email Address',
       password: 'Password',
+      confirmPassword: 'Confirm Password',
+      fullName: 'Full Name',
+      phone: 'Phone Number',
       save: 'Save',
       cancel: 'Cancel',
       delete: 'Delete',
@@ -22,6 +34,12 @@ export const translations = {
       back: 'Back',
       next: 'Next',
       continue: 'Continue',
+      viewAll: 'View all',
+      close: 'Close',
+      submit: 'Submit',
+      required: 'Required',
+      optional: 'Optional',
+      hello: 'Hello',
     },
     
     // Navigation
