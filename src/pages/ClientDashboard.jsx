@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const ClientDashboard = () => {
+  const { t } = useLanguage();
   const [hasDigitalSignature, setHasDigitalSignature] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [signatureRequestSent, setSignatureRequestSent] = useState(false);
@@ -51,8 +53,8 @@ const ClientDashboard = () => {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
-        <p className="text-blue-100">Access your notarized documents and manage your profile</p>
+        <h1 className="text-3xl font-bold mb-2">{t('common.welcomeBack')}!</h1>
+        <p className="text-blue-100">{t('client.accessDocuments')}</p>
       </div>
 
       {/* Digital Signature Status */}
@@ -66,15 +68,15 @@ const ClientDashboard = () => {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-amber-900 mb-1">Digital Signature Not Set Up</h3>
+                <h3 className="text-lg font-semibold text-amber-900 mb-1">{t('client.digitalSignatureNotSetup')}</h3>
                 <p className="text-sm text-amber-700 mb-4">
-                  Some documents require your digital signature. Set up your credentials to sign documents electronically.
+                  {t('client.someDocsRequire')}
                 </p>
                 <button
                   onClick={() => setShowSignatureModal(true)}
                   className="px-6 py-2.5 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 transition-colors"
                 >
-                  Set Up Digital Signature
+                  {t('client.setupDigitalSignature')}
                 </button>
               </div>
             </div>
@@ -92,11 +94,11 @@ const ClientDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-xs text-blue-600 font-medium">+3 this week</span>
+            <span className="text-xs text-blue-600 font-medium">+3 {t('dashboard.thisWeek')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Total Documents</p>
+          <p className="text-sm text-gray-500 mb-1">{t('client.totalDocuments')}</p>
           <h3 className="text-3xl font-bold text-gray-900">12</h3>
-          <p className="text-xs text-gray-400 mt-2">Received from notaries</p>
+          <p className="text-xs text-gray-400 mt-2">{t('client.receivedFromNotaries')}</p>
         </div>
 
         {/* Pending Signatures */}
@@ -107,11 +109,11 @@ const ClientDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </div>
-            <span className="text-xs text-orange-600 font-medium">Action needed</span>
+            <span className="text-xs text-orange-600 font-medium">{t('client.actionNeeded')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Pending Signatures</p>
+          <p className="text-sm text-gray-500 mb-1">{t('client.pendingSignatures')}</p>
           <h3 className="text-3xl font-bold text-gray-900">1</h3>
-          <p className="text-xs text-gray-400 mt-2">Awaiting your signature</p>
+          <p className="text-xs text-gray-400 mt-2">{t('client.awaitingSignature')}</p>
         </div>
 
         {/* Active Notaries */}
@@ -123,9 +125,9 @@ const ClientDashboard = () => {
               </svg>
             </div>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Notaries Worked With</p>
+          <p className="text-sm text-gray-500 mb-1">{t('client.notariesWorkedWith')}</p>
           <h3 className="text-3xl font-bold text-gray-900">3</h3>
-          <p className="text-xs text-gray-400 mt-2">Trusted notaries</p>
+          <p className="text-xs text-gray-400 mt-2">{t('client.trustedNotaries')}</p>
         </div>
       </div>
 
@@ -133,12 +135,12 @@ const ClientDashboard = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Recent Documents</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('client.recentDocuments')}</h2>
             <Link
               to="/dashboard/documents"
               className="text-sm text-blue-600 hover:text-blue-700 font-semibold"
             >
-              View All
+              {t('common.viewAll')}
             </Link>
           </div>
         </div>
@@ -185,14 +187,14 @@ const ClientDashboard = () => {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
-                            Signed
+                            {t('client.signed')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs text-orange-600 font-medium">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
-                            Signature Required
+                            {t('client.signatureRequired')}
                           </span>
                         )}
                       </div>
@@ -208,11 +210,11 @@ const ClientDashboard = () => {
                       ? 'bg-green-100 text-green-700'
                       : 'bg-yellow-100 text-yellow-700'
                   }`}>
-                    {doc.status === 'verified' ? 'Verified' : 'Pending'}
+                    {doc.status === 'verified' ? t('statuses.verified') : t('statuses.pending')}
                   </span>
 
                   {/* Download Button */}
-                  <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                  <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" title={t('common.download')}>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -220,7 +222,7 @@ const ClientDashboard = () => {
 
                   {/* View Button */}
                   <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                    View
+                    {t('common.view')}
                   </button>
                 </div>
               </div>
@@ -240,8 +242,8 @@ const ClientDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Find a Notary</h3>
-              <p className="text-sm text-gray-600">Browse available notaries in your area</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('client.findNotary')}</h3>
+              <p className="text-sm text-gray-600">{t('client.browseNotaries')}</p>
             </div>
           </div>
         </Link>
@@ -255,8 +257,41 @@ const ClientDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Need Help?</h3>
-              <p className="text-sm text-gray-600">Contact support for assistance</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('client.needHelp')}</h3>
+              <p className="text-sm text-gray-600">{t('client.contactSupport')}</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Find Notary */}
+        <Link to="/dashboard/notaries" className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('client.findNotary')}</h3>
+              <p className="text-sm text-gray-600">{t('client.browseNotaries')}</p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Contact Support */}
+        <button className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all group text-left">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-purple-50 rounded-lg group-hover:bg-purple-100 transition-colors">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('client.needHelp')}</h3>
+              <p className="text-sm text-gray-600">{t('client.contactSupport')}</p>
             </div>
           </div>
         </button>
@@ -272,8 +307,8 @@ const ClientDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Set Up Digital Signature</h3>
-              <p className="text-sm text-gray-600">Choose how you want to set up your digital signature</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('client.setUpSignature')}</h3>
+              <p className="text-sm text-gray-600">{t('client.chooseHow')}</p>
             </div>
 
             {signatureRequestSent ? (
@@ -283,8 +318,8 @@ const ClientDashboard = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <div>
-                    <p className="text-sm font-semibold text-green-900">Request Sent!</p>
-                    <p className="text-xs text-green-700">Check your email for instructions</p>
+                    <p className="text-sm font-semibold text-green-900">{t('client.requestSent')}</p>
+                    <p className="text-xs text-green-700">{t('client.checkEmail')}</p>
                   </div>
                 </div>
               </div>
@@ -300,8 +335,8 @@ const ClientDashboard = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <div>
-                      <p className="font-semibold text-gray-900 group-hover:text-blue-600">Request Certificate</p>
-                      <p className="text-xs text-gray-600 mt-1">We'll send you a verified digital certificate via email</p>
+                      <p className="font-semibold text-gray-900 group-hover:text-blue-600">{t('client.requestCertificate')}</p>
+                      <p className="text-xs text-gray-600 mt-1">{t('client.verifiedCertificate')}</p>
                     </div>
                   </div>
                 </button>
@@ -316,8 +351,8 @@ const ClientDashboard = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                     <div>
-                      <p className="font-semibold text-gray-900 group-hover:text-green-600">Generate Now</p>
-                      <p className="text-xs text-gray-600 mt-1">Create a temporary signature instantly (expires in 30 days)</p>
+                      <p className="font-semibold text-gray-900 group-hover:text-green-600">{t('client.generateNow')}</p>
+                      <p className="text-xs text-gray-600 mt-1">{t('client.temporarySignature')}</p>
                     </div>
                   </div>
                 </button>
@@ -329,7 +364,7 @@ const ClientDashboard = () => {
               onClick={() => setShowSignatureModal(false)}
               className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
             >
-              {signatureRequestSent ? 'Close' : 'Cancel'}
+              {signatureRequestSent ? t('common.close') : t('common.cancel')}
             </button>
           </div>
         </div>
