@@ -14,10 +14,26 @@ const Login = () => {
     // TODO: Implement actual authentication logic with backend
     console.log('Login attempt:', formData);
     
-    // Set authentication flag and default role (in real app, this comes from backend)
+    // Demo credentials - In production, this would be validated by backend
+    let userRole = 'client'; // Default role
+    let userName = 'Demo User';
+    
+    // Determine role based on email pattern (DEMO ONLY)
+    if (formData.email.includes('admin')) {
+      userRole = 'admin';
+      userName = 'Admin User';
+    } else if (formData.email.includes('notary')) {
+      userRole = 'notary';
+      userName = 'Carlic Bolomboy';
+    } else if (formData.email.includes('client')) {
+      userRole = 'client';
+      userName = 'Client User';
+    }
+    
+    // Set authentication flag and user data
     localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('userRole', 'notary'); // Default to notary for demo
-    localStorage.setItem('userName', 'Carlic Bolomboy');
+    localStorage.setItem('userRole', userRole);
+    localStorage.setItem('userName', userName);
     localStorage.setItem('userEmail', formData.email);
     
     // Redirect to dashboard
