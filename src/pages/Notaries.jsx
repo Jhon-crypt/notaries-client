@@ -1,4 +1,7 @@
+import { useLanguage } from '../context/LanguageContext';
+
 const Notaries = () => {
+  const { t } = useLanguage();
   // Get user role from localStorage
   const userRole = localStorage.getItem('userRole');
   const isAdmin = userRole === 'admin';
@@ -12,14 +15,14 @@ const Notaries = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Notaries Directory</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('notaries.notariesDirectory')}</h1>
         {/* Only admins can add notaries - notaries sign up themselves */}
         {isAdmin && (
           <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            Verify New Notary
+            {t('notaries.verifyNewNotary')}
           </button>
         )}
       </div>
@@ -27,19 +30,19 @@ const Notaries = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Total Notaries</p>
+          <p className="text-sm text-gray-500 mb-2">{t('notaries.totalNotaries')}</p>
           <h3 className="text-3xl font-bold text-gray-900">45</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Active Today</p>
+          <p className="text-sm text-gray-500 mb-2">{t('notaries.activeToday')}</p>
           <h3 className="text-3xl font-bold text-green-600">32</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Avg Rating</p>
+          <p className="text-sm text-gray-500 mb-2">{t('notaries.avgRating')}</p>
           <h3 className="text-3xl font-bold text-yellow-600">4.8</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Cases This Month</p>
+          <p className="text-sm text-gray-500 mb-2">{t('notaries.casesThisMonth')}</p>
           <h3 className="text-3xl font-bold text-blue-600">892</h3>
         </div>
       </div>
@@ -55,7 +58,7 @@ const Notaries = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{notary.name}</h3>
-                  <p className="text-sm text-gray-500">License: {notary.license}</p>
+                  <p className="text-sm text-gray-500">{t('admin.license')}: {notary.license}</p>
                   <div className="flex items-center gap-4 mt-2">
                     <span className="text-sm text-gray-600 flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,14 +79,14 @@ const Notaries = () => {
                     </svg>
                     <span className="font-semibold text-gray-900">{notary.rating}</span>
                   </div>
-                  <p className="text-xs text-gray-500">Rating</p>
+                  <p className="text-xs text-gray-500">{t('dashboard.rating')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg font-semibold text-gray-900">{notary.cases}</p>
-                  <p className="text-xs text-gray-500">Cases</p>
+                  <p className="text-xs text-gray-500">{t('dashboard.cases')}</p>
                 </div>
                 <button className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-                  View Profile
+                  {t('dashboard.viewProfile')}
                 </button>
               </div>
             </div>
