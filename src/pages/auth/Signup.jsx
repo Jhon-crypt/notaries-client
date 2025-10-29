@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ServiceZoneMap from '../../components/maps/ServiceZoneMap';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -13,7 +14,13 @@ const Signup = () => {
     
     // Step 2: Notary Information (only for notaries)
     licenseNumber: '',
+    licenseIssueDate: '',
+    licenseExpirationDate: '',
     state: '',
+    officeAddress: '',
+    officeCity: '',
+    officeState: '',
+    officeZipCode: '',
     serviceZones: '',
     specialization: '',
     maxDailyWorkload: '10',
@@ -244,24 +251,63 @@ const Signup = () => {
             {step === 2 && formData.role === 'notary' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Notary Credentials & Service Zones</h3>
-                  <p className="text-sm text-gray-600">Define your service areas and daily capacity</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Notary Credentials & Service Information</h3>
+                  <p className="text-sm text-gray-600">Provide your license details and office location</p>
                 </div>
 
-                <div>
-                  <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    Notary License Number *
-                  </label>
-                  <input
-                    type="text"
-                    id="licenseNumber"
-                    name="licenseNumber"
-                    value={formData.licenseNumber}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                    placeholder="NOT-2024-001"
-                    required
-                  />
+                {/* License Information Section */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-3">License Information</h4>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                        Notary License Number *
+                      </label>
+                      <input
+                        type="text"
+                        id="licenseNumber"
+                        name="licenseNumber"
+                        value={formData.licenseNumber}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                        placeholder="NOT-2024-001"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="licenseIssueDate" className="block text-sm font-medium text-gray-700 mb-2">
+                          Issue Date *
+                        </label>
+                        <input
+                          type="date"
+                          id="licenseIssueDate"
+                          name="licenseIssueDate"
+                          value={formData.licenseIssueDate}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="licenseExpirationDate" className="block text-sm font-medium text-gray-700 mb-2">
+                          Expiration Date *
+                        </label>
+                        <input
+                          type="date"
+                          id="licenseExpirationDate"
+                          name="licenseExpirationDate"
+                          value={formData.licenseExpirationDate}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -287,21 +333,96 @@ const Signup = () => {
                   </select>
                 </div>
 
+                {/* Office Address Section */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-green-900 mb-3">Office Address</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="officeAddress" className="block text-sm font-medium text-gray-700 mb-2">
+                        Street Address *
+                      </label>
+                      <input
+                        type="text"
+                        id="officeAddress"
+                        name="officeAddress"
+                        value={formData.officeAddress}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                        placeholder="123 Main Street, Suite 100"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label htmlFor="officeCity" className="block text-sm font-medium text-gray-700 mb-2">
+                          City *
+                        </label>
+                        <input
+                          type="text"
+                          id="officeCity"
+                          name="officeCity"
+                          value={formData.officeCity}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          placeholder="New York"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="officeState" className="block text-sm font-medium text-gray-700 mb-2">
+                          State *
+                        </label>
+                        <select
+                          id="officeState"
+                          name="officeState"
+                          value={formData.officeState}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          required
+                        >
+                          <option value="">State</option>
+                          <option value="NY">NY</option>
+                          <option value="CA">CA</option>
+                          <option value="TX">TX</option>
+                          <option value="FL">FL</option>
+                          <option value="IL">IL</option>
+                          <option value="PA">PA</option>
+                          <option value="OH">OH</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label htmlFor="officeZipCode" className="block text-sm font-medium text-gray-700 mb-2">
+                          ZIP Code *
+                        </label>
+                        <input
+                          type="text"
+                          id="officeZipCode"
+                          name="officeZipCode"
+                          value={formData.officeZipCode}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                          placeholder="10001"
+                          maxLength="10"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Service Zones with Map */}
                 <div>
-                  <label htmlFor="serviceZones" className="block text-sm font-medium text-gray-700 mb-2">
-                    Service Zones *
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service Zones * <span className="text-xs text-gray-500">(Draw on map)</span>
                   </label>
-                  <input
-                    type="text"
-                    id="serviceZones"
-                    name="serviceZones"
+                  <ServiceZoneMap 
                     value={formData.serviceZones}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                    placeholder="e.g., Manhattan, Brooklyn"
-                    required
+                    onChange={(zones) => setFormData({ ...formData, serviceZones: zones })}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Comma-separated list of areas you serve</p>
                 </div>
 
                 <div>

@@ -1,16 +1,43 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const TopBar = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-4">
       <div className="flex items-center justify-between">
-        {/* Greeting Section */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Hello, Carlic!</h1>
-          <p className="text-sm text-gray-500">Manage notarized documents and track validation status</p>
+        {/* Left Section - Back/Forward Navigation and Greeting */}
+        <div className="flex items-center gap-4">
+          {/* Back/Forward Navigation Arrows */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Go back"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => navigate(1)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Go forward"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Greeting Section */}
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Hello, Carlic!</h1>
+            <p className="text-sm text-gray-500">Manage notarized documents and track validation status</p>
+          </div>
         </div>
 
         {/* Right Section - Search, Notifications, Profile */}
