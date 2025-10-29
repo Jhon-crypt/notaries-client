@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   const menuItems = [
     {
@@ -11,7 +13,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard',
-      label: 'Dashboard'
+      labelKey: 'nav.dashboard'
     },
     {
       icon: (
@@ -20,7 +22,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/documents',
-      label: 'Documents'
+      labelKey: 'nav.documents'
     },
     {
       icon: (
@@ -29,7 +31,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/job-entry',
-      label: 'New Job',
+      labelKey: 'nav.newJob',
       highlight: true
     },
     {
@@ -39,7 +41,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/clients',
-      label: 'Clients'
+      labelKey: 'nav.clients'
     },
     {
       icon: (
@@ -48,7 +50,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/notaries',
-      label: 'Notaries'
+      labelKey: 'nav.notaries'
     },
     {
       icon: (
@@ -57,7 +59,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/calendar',
-      label: 'Calendar'
+      labelKey: 'nav.calendar'
     },
     {
       icon: (
@@ -67,7 +69,7 @@ const Sidebar = () => {
         </svg>
       ),
       path: '/dashboard/settings',
-      label: 'Settings'
+      labelKey: 'nav.settings'
     }
   ];
 
@@ -101,14 +103,14 @@ const Sidebar = () => {
                   ? 'bg-green-50 text-green-600 hover:bg-green-100'
                   : 'text-gray-400 hover:bg-gray-100 hover:text-gray-900'
             }`}
-            title={item.label}
+            title={t(item.labelKey)}
           >
             {item.icon}
             {/* Tooltip */}
             <span className={`absolute left-full ml-2 px-2 py-1 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap ${
               item.highlight ? 'bg-green-600' : 'bg-gray-900'
             }`}>
-              {item.label}
+              {t(item.labelKey)}
             </span>
           </Link>
         ))}

@@ -93,18 +93,20 @@ const JobEntry = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">{t('jobEntry.title')}</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {t('jobEntry.title')}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Sender Information */}
         <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase">REMITENTE</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase">{t('jobEntry.sender')}</h2>
           
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">
-                DNI / RUC
+                {t('jobEntry.dni')}
               </label>
               <input
                 type="text"
@@ -119,7 +121,7 @@ const JobEntry = () => {
 
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">
-                DIRECCIÓN
+                {t('jobEntry.address')}
               </label>
               <input
                 type="text"
@@ -134,7 +136,7 @@ const JobEntry = () => {
 
             <div className="flex items-center gap-3">
               <label className="text-sm font-bold text-gray-900">
-                Nro Destinatarios:
+                {t('jobEntry.numRecipients')}:
               </label>
               <div className="px-4 py-2 bg-gray-100 border-2 border-gray-300 rounded-lg min-w-[60px] text-center font-bold">
                 {recipients.length}
@@ -154,7 +156,7 @@ const JobEntry = () => {
                     <th className="px-4 py-3 text-left text-sm font-bold text-white border-r-2 border-blue-400"></th>
                     {recipients.map((recipient, index) => (
                       <th key={recipient.id} className="px-4 py-3 text-center text-sm font-bold text-white uppercase min-w-[220px] border-r-2 border-blue-400">
-                        DESTINATARIO {index + 1}
+                        {t('jobEntry.recipient')} {index + 1}
                       </th>
                     ))}
                   </tr>
@@ -162,7 +164,7 @@ const JobEntry = () => {
                 <tbody className="divide-y-2 divide-gray-300">
                   {/* Recipient Name */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">NOMBRE DESTINATARIO</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.recipientName')}</td>
                     {recipients.map(recipient => (
                       <td key={`name-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <input
@@ -179,7 +181,7 @@ const JobEntry = () => {
 
                   {/* Street and Number */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">CALLE Y NUMERO</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.streetNumber')}</td>
                     {recipients.map(recipient => (
                       <td key={`street-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <input
@@ -212,7 +214,7 @@ const JobEntry = () => {
 
                   {/* District */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">DISTRITO</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.district')}</td>
                     {recipients.map(recipient => (
                       <td key={`district-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -221,7 +223,7 @@ const JobEntry = () => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-gray-100"
                           required
                         >
-                          <option value="">Seleccionar distrito</option>
+                          <option value="">{t('jobEntry.selectDistrict')}</option>
                           <option value="Miraflores">Miraflores</option>
                           <option value="San Isidro">San Isidro</option>
                           <option value="Surquillo">Surquillo</option>
@@ -233,7 +235,7 @@ const JobEntry = () => {
 
                   {/* Province */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">PROVINCIA</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.province')}</td>
                     {recipients.map(recipient => (
                       <td key={`province-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -242,7 +244,7 @@ const JobEntry = () => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-gray-100"
                           required
                         >
-                          <option value="">Seleccionar provincia</option>
+                          <option value="">{t('jobEntry.selectProvince')}</option>
                           <option value="Lima">Lima</option>
                           <option value="Callao">Callao</option>
                         </select>
@@ -252,7 +254,7 @@ const JobEntry = () => {
 
                   {/* Department */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">DEPARTAMENTO</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.department')}</td>
                     {recipients.map(recipient => (
                       <td key={`department-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -261,7 +263,7 @@ const JobEntry = () => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-gray-100"
                           required
                         >
-                          <option value="">Seleccionar departamento</option>
+                          <option value="">{t('jobEntry.selectDepartment')}</option>
                           <option value="Lima">Lima</option>
                           <option value="Callao">Callao</option>
                         </select>
@@ -271,7 +273,7 @@ const JobEntry = () => {
 
                   {/* Delivery Method */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">MODALIDAD ENTREGA</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.deliveryMethod')}</td>
                     {recipients.map(recipient => (
                       <td key={`delivery-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -291,7 +293,7 @@ const JobEntry = () => {
 
                   {/* Pickup Method */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">MODALIDAD RECOJO</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.pickupMethod')}</td>
                     {recipients.map(recipient => (
                       <td key={`pickup-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -310,7 +312,7 @@ const JobEntry = () => {
 
                   {/* Leave at Door */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">DEJAR BAJO PUERTA SI NO HAY QUIEN RECIBA?</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.leaveAtDoor')}</td>
                     {recipients.map(recipient => (
                       <td key={`door-${recipient.id}`} className="px-4 py-3 text-center border-r-2 border-gray-300">
                         <input
@@ -325,7 +327,7 @@ const JobEntry = () => {
 
                   {/* Corresponding Agent */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">AGENTE CORRESPONSAL</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.correspondingAgent')}</td>
                     {recipients.map(recipient => (
                       <td key={`agent-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <select
@@ -345,7 +347,7 @@ const JobEntry = () => {
 
                   {/* Upload PDF */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">CARGAR/ESCANEAR .pdf</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.uploadPDF')}</td>
                     {recipients.map(recipient => (
                       <td key={`pdf-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <label className="block">
@@ -356,7 +358,7 @@ const JobEntry = () => {
                             className="hidden"
                           />
                           <div className="px-4 py-2 bg-gray-500 text-white rounded-lg text-center cursor-pointer hover:bg-gray-600 transition-colors text-sm font-medium">
-                            Buscar Archivo/Escanear
+                            {t('jobEntry.uploadPDF')}
                           </div>
                         </label>
                         {recipient.pdfFile && (
@@ -368,7 +370,7 @@ const JobEntry = () => {
 
                   {/* Cost */}
                   <tr>
-                    <td className="px-4 py-3 text-sm font-bold text-gray-900 bg-gray-50 border-r-2 border-gray-300">COSTO</td>
+                    <td className="px-4 py-3 text-sm font-bold text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.cost')}</td>
                     {recipients.map(recipient => (
                       <td key={`cost-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
                         <input
@@ -394,7 +396,7 @@ const JobEntry = () => {
                             onClick={() => removeRecipient(recipient.id)}
                             className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors"
                           >
-                            Eliminar
+                            {t('jobEntry.removeRecipient')}
                           </button>
                         )}
                       </td>
@@ -413,14 +415,14 @@ const JobEntry = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Agregar Destinatario
+              {t('jobEntry.addRecipient')}
             </button>
           </div>
 
           {/* Map - Service Zones */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Zonas de Servicio</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">{t('jobEntry.serviceZones') || 'Zonas de Servicio'}</h3>
               <div className="h-96 bg-gray-100 rounded-lg overflow-hidden">
                 <ServiceZoneMap
                   value=""
@@ -449,13 +451,13 @@ const JobEntry = () => {
         <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
           <div className="flex items-center justify-between">
             <div className="text-2xl font-bold text-gray-900">
-              TOTAL: S/. {calculateTotal()}
+              {t('jobEntry.total')} S/. {calculateTotal()}
             </div>
             <button
               type="submit"
               className="px-16 py-4 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg uppercase"
             >
-              PAGAR
+              {t('jobEntry.pay')}
             </button>
           </div>
         </div>
