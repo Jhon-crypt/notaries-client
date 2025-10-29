@@ -6,6 +6,7 @@ import Signup from './pages/auth/Signup';
 import AdminSignup from './pages/auth/AdminSignup';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
+import JobEntry from './pages/JobEntry';
 import Clients from './pages/Clients';
 import Notaries from './pages/Notaries';
 import Settings from './pages/Settings';
@@ -25,9 +26,10 @@ function App() {
           <ProtectedRoute>
             <DashboardLayout />
           </ProtectedRoute>
-        }>
+        }        >
           <Route index element={<Dashboard />} />
           <Route path="documents" element={<Documents />} />
+          <Route path="job-entry" element={<JobEntry />} />
           <Route path="clients" element={<Clients />} />
           <Route path="notaries" element={<Notaries />} />
           <Route path="calendar" element={<div className="text-2xl font-bold">Calendar (Coming Soon)</div>} />
