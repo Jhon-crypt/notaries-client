@@ -217,19 +217,24 @@ const Login = () => {
             </form>
 
             {/* Sign Up Link */}
-            <div className="mt-8 text-center space-y-2">
+            <div className="mt-8 text-center space-y-3">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
                 <Link to="/signup" className="text-green-600 hover:text-green-700 font-semibold">
                   Sign up
                 </Link>
               </p>
-              <p className="text-xs text-gray-500">
-                Administrator?{' '}
-                <Link to="/admin/signup" className="text-purple-600 hover:text-purple-700 font-semibold">
-                  Register as Admin
-                </Link>
-              </p>
+              
+              {/* Admin Login Note */}
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-xs">
+                <p className="text-purple-900 font-semibold mb-1">Administrator Login</p>
+                <p className="text-purple-700">
+                  Admins use this same login page. Don't have admin credentials?{' '}
+                  <Link to="/admin/signup" className="text-purple-600 hover:text-purple-800 font-semibold underline">
+                    Register as Admin
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
 
