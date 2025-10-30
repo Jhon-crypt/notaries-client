@@ -48,8 +48,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-8 items-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
         {/* Left Side - Branding */}
         <div className="hidden md:block">
           <div className="space-y-6">

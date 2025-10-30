@@ -18,9 +18,9 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Admin Welcome Banner */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-2xl p-8 text-white">
+      <div className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">{t('admin.administratorDashboard')}</h1>

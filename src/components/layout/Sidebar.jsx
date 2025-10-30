@@ -78,18 +78,20 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-6 gap-4">
-      {/* Logo */}
-      <div className="mb-4">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex w-20 bg-white border-r border-gray-200 flex-col items-center py-6 gap-4">
+        {/* Logo */}
+        <div className="mb-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
         </div>
-      </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 flex flex-col gap-2 w-full px-3">
+        {/* Menu Items */}
+        <nav className="flex-1 flex flex-col gap-2 w-full px-3">
         {menuItems.map((item, index) => (
           <Link
             key={index}
@@ -117,20 +119,45 @@ const Sidebar = () => {
       </nav>
 
       {/* Profile at bottom */}
-      <Link
-        to="/dashboard/profile"
-        className={`p-3 rounded-xl transition-all duration-200 ${
-          isActive('/dashboard/profile')
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-400 hover:bg-gray-100 hover:text-gray-900'
-        }`}
-        title="Profile"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      </Link>
-    </div>
+        <Link
+          to="/dashboard/profile"
+          className={`p-3 rounded-xl transition-all duration-200 ${
+            isActive('/dashboard/profile')
+              ? 'bg-gray-900 text-white'
+              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-900'
+          }`}
+          title={t('nav.profile')}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </Link>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-2 z-50">
+        <nav className="flex items-center justify-around">
+          {menuItems.slice(0, 5).map((item, index) => (
+            <Link
+              key={index}
+              to={item.path}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+                isActive(item.path)
+                  ? item.highlight
+                    ? 'text-green-600'
+                    : 'text-gray-900'
+                  : 'text-gray-400'
+              }`}
+            >
+              <div className={`${isActive(item.path) && item.highlight ? 'bg-green-100 p-1 rounded-lg' : ''}`}>
+                {item.icon}
+              </div>
+              <span className="text-[10px] font-medium">{t(item.labelKey)}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </>
   );
 };
 

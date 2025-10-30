@@ -11,12 +11,12 @@ const TopBar = () => {
   const userName = localStorage.getItem('userName') || 'User';
 
   return (
-    <div className="bg-white border-b border-gray-200 px-8 py-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+      <div className="flex items-center justify-between gap-4">
         {/* Left Section - Back/Forward Navigation and Greeting */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           {/* Back/Forward Navigation Arrows */}
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => navigate(-1)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -38,20 +38,20 @@ const TopBar = () => {
           </div>
 
           {/* Greeting Section */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t('common.hello')}, {userName.split(' ')[0]}!</h1>
-            <p className="text-sm text-gray-500">{t('dashboard.manageDocuments')}</p>
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">{t('common.hello')}, {userName.split(' ')[0]}!</h1>
+            <p className="hidden sm:block text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.manageDocuments')}</p>
           </div>
         </div>
 
         {/* Right Section - Search, Notifications, Profile */}
-        <div className="flex items-center gap-4">
-          {/* Search Bar */}
-          <div className="relative">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0">
+          {/* Search Bar - Hidden on mobile, visible on lg screens */}
+          <div className="hidden lg:block relative">
             <input
               type="text"
               placeholder={t('common.search')}
-              className="w-80 pl-4 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              className="w-64 xl:w-80 pl-4 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
             <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2 rounded-lg hover:bg-gray-800 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,24 +60,24 @@ const TopBar = () => {
             </button>
           </div>
 
-          {/* Messages/Chat Button */}
-          <button className="relative p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+          {/* Messages/Chat Button - Hidden on small screens */}
+          <button className="hidden md:block relative p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* Language Toggle Button */}
+          {/* Language Toggle Button - Always visible, compact on mobile */}
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             title={language === 'en' ? 'Switch to Spanish' : 'Cambiar a Inglés'}
           >
-            <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
             </svg>
-            <span className="text-sm font-semibold text-gray-700">{language === 'en' ? 'EN' : 'ES'}</span>
+            <span className="text-xs sm:text-sm font-semibold text-gray-700">{language === 'en' ? 'EN' : 'ES'}</span>
           </button>
 
           {/* Notifications Button */}

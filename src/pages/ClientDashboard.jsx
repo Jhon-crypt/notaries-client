@@ -50,16 +50,16 @@ const ClientDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">{t('common.welcomeBack')}!</h1>
-        <p className="text-blue-100">{t('client.accessDocuments')}</p>
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t('common.welcomeBack')}!</h1>
+        <p className="text-sm sm:text-base text-blue-100">{t('client.accessDocuments')}</p>
       </div>
 
       {/* Digital Signature Status */}
       {!hasDigitalSignature && (
-        <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6">
+        <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 sm:p-6">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-amber-100 rounded-lg">

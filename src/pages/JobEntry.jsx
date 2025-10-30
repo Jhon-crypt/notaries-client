@@ -90,17 +90,17 @@ const JobEntry = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 max-w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
           {t('jobEntry.title')}
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Sender Information */}
-        <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
+        <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-4 sm:p-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase">{t('jobEntry.sender')}</h2>
           
           <div className="space-y-4">
@@ -146,10 +146,11 @@ const JobEntry = () => {
         </div>
 
         {/* Recipients Grid with Map */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Recipients Table */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 overflow-x-auto">
+          <div className="lg:col-span-2 space-y-4 overflow-hidden">
+            {/* Mobile/Tablet: Horizontal scroll for table */}
+            <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 overflow-x-auto -mx-4 sm:mx-0">
               <table className="w-full border-collapse">
                 <thead className="bg-blue-500 border-b-2 border-gray-300">
                   <tr>
@@ -421,9 +422,9 @@ const JobEntry = () => {
 
           {/* Map - Service Zones */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">{t('jobEntry.serviceZones') || 'Zonas de Servicio'}</h3>
-              <div className="h-96 bg-gray-100 rounded-lg overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:sticky sm:top-6">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4">{t('jobEntry.serviceZones') || 'Zonas de Servicio'}</h3>
+              <div className="h-64 sm:h-80 lg:h-96 bg-gray-100 rounded-lg overflow-hidden">
                 <ServiceZoneMap
                   value=""
                   onChange={() => {}}
@@ -448,14 +449,14 @@ const JobEntry = () => {
         </div>
 
         {/* Total and Payment */}
-        <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-6">
-          <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold text-gray-900">
+        <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-xl sm:text-2xl font-bold text-gray-900">
               {t('jobEntry.total')} S/. {calculateTotal()}
             </div>
             <button
               type="submit"
-              className="px-16 py-4 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg uppercase"
+              className="w-full sm:w-auto px-8 sm:px-12 lg:px-16 py-3 sm:py-4 bg-blue-600 text-white text-lg sm:text-xl lg:text-2xl font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg uppercase"
             >
               {t('jobEntry.pay')}
             </button>

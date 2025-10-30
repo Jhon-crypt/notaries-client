@@ -13,8 +13,8 @@ const DashboardLayout = () => {
         {/* Top Bar */}
         <TopBar />
         
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-8">
+        {/* Page Content - Add bottom padding on mobile for bottom nav */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
           <Outlet />
         </main>
       </div>
