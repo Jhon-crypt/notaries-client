@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import ClientDashboard from './ClientDashboard';
 import AdminDashboard from './AdminDashboard';
 
 const Dashboard = () => {
+  const { t } = useLanguage();
   // Get user role from localStorage
   const userRole = localStorage.getItem('userRole');
   
@@ -28,11 +30,11 @@ const Dashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-xs text-green-600 font-medium">+12% this month</span>
+            <span className="text-xs text-green-600 font-medium">+12% {t('dashboard.thisMonth')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Documents Validated</p>
+          <p className="text-sm text-gray-500 mb-1">{t('dashboard.documentsValidated')}</p>
           <h3 className="text-3xl font-bold text-gray-900">128</h3>
-          <p className="text-xs text-gray-400 mt-2">PDFs verified as true copies</p>
+          <p className="text-xs text-gray-400 mt-2">{t('dashboard.pdfsVerified')}</p>
         </div>
 
         {/* Pending Reviews */}
@@ -43,11 +45,11 @@ const Dashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-xs text-yellow-600 font-medium">Needs attention</span>
+            <span className="text-xs text-yellow-600 font-medium">{t('dashboard.needsAttention')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Pending Reviews</p>
+          <p className="text-sm text-gray-500 mb-1">{t('dashboard.pendingReviews')}</p>
           <h3 className="text-3xl font-bold text-gray-900">12</h3>
-          <p className="text-xs text-gray-400 mt-2">Awaiting validation</p>
+          <p className="text-xs text-gray-400 mt-2">{t('dashboard.awaitingValidation')}</p>
         </div>
 
         {/* Active Notaries */}
@@ -58,11 +60,11 @@ const Dashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <span className="text-xs text-blue-600 font-medium">37 zones covered</span>
+            <span className="text-xs text-blue-600 font-medium">37 {t('dashboard.zonesCovered')}</span>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Active Notaries</p>
+          <p className="text-sm text-gray-500 mb-1">{t('dashboard.activeNotaries')}</p>
           <h3 className="text-3xl font-bold text-gray-900">37</h3>
-          <p className="text-xs text-gray-400 mt-2">With active service zones</p>
+          <p className="text-xs text-gray-400 mt-2">{t('dashboard.withActiveZones')}</p>
         </div>
 
         {/* Registered Clients */}
@@ -73,11 +75,11 @@ const Dashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <span className="text-xs text-green-100 font-medium">+28 this week</span>
+            <span className="text-xs text-green-100 font-medium">+28 {t('dashboard.thisWeek')}</span>
           </div>
-          <p className="text-sm text-green-100 mb-1">Registered Clients</p>
+          <p className="text-sm text-green-100 mb-1">{t('dashboard.registeredClients')}</p>
           <h3 className="text-3xl font-bold">213</h3>
-          <p className="text-xs text-green-100 mt-2">Total active accounts</p>
+          <p className="text-xs text-green-100 mt-2">{t('dashboard.totalActiveAccounts')}</p>
         </div>
       </div>
 
@@ -87,14 +89,14 @@ const Dashboard = () => {
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-gray-900">Document Activity</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('dashboard.documentActivity')}</h2>
               <span className="flex items-center gap-1 text-sm text-green-600">
                 <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                Healthy
+                {t('dashboard.healthy')}
               </span>
             </div>
             <select className="text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5">
-              <option>Last 30 days</option>
+              <option>{t('dashboard.last30Days')}</option>
               <option>Last 7 days</option>
               <option>Last 24 hours</option>
             </select>
@@ -102,14 +104,14 @@ const Dashboard = () => {
 
           <div className="grid grid-cols-2 gap-8 mb-6">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Validation Rate</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.validationRate')}</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-gray-900">91.4%</span>
                 <span className="text-sm text-green-600">+5.2%</span>
               </div>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Avg. Processing Time</p>
+              <p className="text-sm text-gray-500 mb-1">{t('dashboard.avgProcessingTime')}</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-gray-900">2.3 hrs</span>
                 <span className="text-sm text-green-600">-18%</span>
@@ -139,10 +141,10 @@ const Dashboard = () => {
 
         {/* Validation Success Rate */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Validation Success</h2>
-          <p className="text-sm text-gray-500 mb-2">This Month</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">{t('dashboard.validationSuccess')}</h2>
+          <p className="text-sm text-gray-500 mb-2">{t('dashboard.successRate')}</p>
           <h3 className="text-3xl font-bold text-gray-900 mb-2">128 / 140</h3>
-          <p className="text-sm text-gray-600 mb-6">12 documents pending validation</p>
+          <p className="text-sm text-gray-600 mb-6">12 {t('dashboard.documentsPendingValidation')}</p>
           
           {/* Circular Progress */}
           <div className="flex items-center justify-center mb-4">
@@ -177,8 +179,8 @@ const Dashboard = () => {
         {/* Recent Documents */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Recent Documents</h2>
-            <Link to="/dashboard/documents" className="text-sm text-blue-600 hover:text-blue-700">View all</Link>
+            <h2 className="text-xl font-bold text-gray-900">{t('dashboard.recentDocuments')}</h2>
+            <Link to="/dashboard/documents" className="text-sm text-blue-600 hover:text-blue-700">{t('common.viewAll')}</Link>
           </div>
           <div className="space-y-4">
             <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
@@ -189,9 +191,9 @@ const Dashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Contract_Agreement.pdf</p>
-                <p className="text-xs text-gray-500">Validated • 2 hours ago</p>
+                <p className="text-xs text-gray-500">{t('statuses.verified')} • 2 {t('time.hoursAgo')}</p>
               </div>
-              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Done</span>
+              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">{t('statuses.done')}</span>
             </div>
             <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
               <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -201,9 +203,9 @@ const Dashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Property_Deed.pdf</p>
-                <p className="text-xs text-gray-500">Pending • 5 hours ago</p>
+                <p className="text-xs text-gray-500">{t('statuses.pending')} • 5 {t('time.hoursAgo')}</p>
               </div>
-              <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">Review</span>
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">{t('statuses.review')}</span>
             </div>
             <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -213,9 +215,9 @@ const Dashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Notarized_Will.pdf</p>
-                <p className="text-xs text-gray-500">Validated • 1 day ago</p>
+                <p className="text-xs text-gray-500">{t('statuses.verified')} • 1 {t('time.daysAgo')}</p>
               </div>
-              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Done</span>
+              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">{t('statuses.done')}</span>
             </div>
           </div>
         </div>
@@ -223,8 +225,8 @@ const Dashboard = () => {
         {/* Top Notaries */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Top Notaries</h2>
-            <Link to="/dashboard/notaries" className="text-sm text-blue-600 hover:text-blue-700">View all</Link>
+            <h2 className="text-xl font-bold text-gray-900">{t('dashboard.topNotaries')}</h2>
+            <Link to="/dashboard/notaries" className="text-sm text-blue-600 hover:text-blue-700">{t('common.viewAll')}</Link>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between py-3 border-l-4 border-green-500 pl-4">
@@ -292,7 +294,7 @@ const Dashboard = () => {
 
         {/* Security & Compliance */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Security & Compliance</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">{t('dashboard.securityCompliance')}</h2>
           
           <div className="space-y-4 mb-6">
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
