@@ -135,24 +135,24 @@ const Sidebar = () => {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-2 z-50">
-        <nav className="flex items-center justify-around">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 px-1 py-3 z-50 shadow-lg">
+        <nav className="flex items-center justify-around max-w-screen-xl mx-auto">
           {menuItems.slice(0, 5).map((item, index) => (
             <Link
               key={index}
               to={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-all min-w-[60px] ${
                 isActive(item.path)
                   ? item.highlight
-                    ? 'text-green-600'
-                    : 'text-gray-900'
-                  : 'text-gray-400'
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-900 bg-gray-100'
+                  : 'text-gray-500'
               }`}
             >
-              <div className={`${isActive(item.path) && item.highlight ? 'bg-green-100 p-1 rounded-lg' : ''}`}>
+              <div className="w-6 h-6 flex items-center justify-center">
                 {item.icon}
               </div>
-              <span className="text-[10px] font-medium">{t(item.labelKey)}</span>
+              <span className="text-[9px] sm:text-[10px] font-medium text-center leading-tight">{t(item.labelKey)}</span>
             </Link>
           ))}
         </nav>
