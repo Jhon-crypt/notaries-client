@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import PDFUpload from '../components/documents/PDFUpload';
 
 const Documents = () => {
+  const { t } = useLanguage();
   const [showUpload, setShowUpload] = useState(false);
   const [documents, setDocuments] = useState([
     { id: 1, name: 'Contract_Agreement.pdf', client: 'John Doe', date: '2024-01-15', status: 'Verified', size: '2.4 MB', certifiedBy: 'Sarah Williams', documentType: 'Contract' },
@@ -31,7 +33,7 @@ const Documents = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Documents</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('nav.documents')}</h1>
           <p className="text-sm text-gray-600 mt-1">
             {userRole === 'notary' ? 'Upload and certify PDF documents' : 'View your certified documents'}
           </p>
@@ -44,7 +46,7 @@ const Documents = () => {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            {showUpload ? 'Cancel Upload' : 'Upload & Certify PDF'}
+            {showUpload ? t('common.cancel') + ' ' + t('common.upload') : t('documents.uploadCertifyPDF')}
           </button>
         )}
       </div>
@@ -64,7 +66,7 @@ const Documents = () => {
             <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p className="text-sm text-gray-500">Total Documents</p>
+            <p className="text-sm text-gray-500">{t('client.totalDocuments')}</p>
           </div>
           <h3 className="text-3xl font-bold text-gray-900">{documents.length}</h3>
         </div>
@@ -73,7 +75,7 @@ const Documents = () => {
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-gray-500">Verified</p>
+            <p className="text-sm text-gray-500">{t('statuses.verified')}</p>
           </div>
           <h3 className="text-3xl font-bold text-green-600">{documents.filter(d => d.status === 'Verified').length}</h3>
         </div>
@@ -82,7 +84,7 @@ const Documents = () => {
             <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-gray-500">Pending Review</p>
+            <p className="text-sm text-gray-500">{t('dashboard.pendingReviews')}</p>
           </div>
           <h3 className="text-3xl font-bold text-yellow-600">{documents.filter(d => d.status === 'Pending').length}</h3>
         </div>
@@ -91,7 +93,7 @@ const Documents = () => {
             <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <p className="text-sm text-gray-500">This Month</p>
+            <p className="text-sm text-gray-500">{t('dashboard.successRate')}</p>
           </div>
           <h3 className="text-3xl font-bold text-purple-600">28</h3>
         </div>
@@ -101,17 +103,17 @@ const Documents = () => {
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Document List</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('documents.documentList') || 'Document List'}</h2>
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Search documents..."
+                placeholder={t('documents.searchDocuments')}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
               <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                <option value="all">All Status</option>
-                <option value="verified">Verified</option>
-                <option value="pending">Pending</option>
+                <option value="all">{t('documents.allStatuses')}</option>
+                <option value="verified">{t('statuses.verified')}</option>
+                <option value="pending">{t('statuses.pending')}</option>
               </select>
             </div>
           </div>
@@ -191,10 +193,10 @@ const Documents = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <button className="text-blue-600 hover:text-blue-900 transition-colors">View</button>
-                      <button className="text-green-600 hover:text-green-900 transition-colors">Download</button>
+                      <button className="text-blue-600 hover:text-blue-900 transition-colors">{t('common.view')}</button>
+                      <button className="text-green-600 hover:text-green-900 transition-colors">{t('common.download')}</button>
                       {userRole === 'notary' || userRole === 'admin' && (
-                        <button className="text-red-600 hover:text-red-900 transition-colors">Delete</button>
+                        <button className="text-red-600 hover:text-red-900 transition-colors">{t('common.delete')}</button>
                       )}
                     </div>
                   </td>

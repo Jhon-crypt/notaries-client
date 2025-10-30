@@ -1,14 +1,18 @@
+import { useLanguage } from '../context/LanguageContext';
+
 const Settings = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-900">{t('nav.settings')}</h1>
 
       {/* Account Settings */}
       <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Account Settings</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('settings.accountSettings')}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.fullName')}</label>
             <input
               type="text"
               defaultValue="Carlic Bolomboy"
@@ -16,7 +20,7 @@ const Settings = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.email')}</label>
             <input
               type="email"
               defaultValue="carlic@gmail.com"
@@ -24,7 +28,7 @@ const Settings = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.phone')}</label>
             <input
               type="tel"
               defaultValue="+1 234-567-8900"
@@ -36,10 +40,10 @@ const Settings = () => {
 
       {/* Security Settings */}
       <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Security</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('settings.securitySettings')}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.currentPassword')}</label>
             <input
               type="password"
               placeholder="Enter current password"
@@ -47,7 +51,7 @@ const Settings = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.newPassword')}</label>
             <input
               type="password"
               placeholder="Enter new password"
@@ -55,7 +59,7 @@ const Settings = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.confirmPassword')}</label>
             <input
               type="password"
               placeholder="Confirm new password"

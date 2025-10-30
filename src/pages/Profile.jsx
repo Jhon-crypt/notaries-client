@@ -1,7 +1,11 @@
+import { useLanguage } from '../context/LanguageContext';
+
 const Profile = () => {
+  const { t } = useLanguage();
+  
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+      <h1 className="text-3xl font-bold text-gray-900">{t('nav.profile')}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}

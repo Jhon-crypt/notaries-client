@@ -1,4 +1,7 @@
+import { useLanguage } from '../context/LanguageContext';
+
 const Clients = () => {
+  const { t } = useLanguage();
   const clients = [
     { id: 1, name: 'John Doe', email: 'john@example.com', phone: '+1 234-567-8900', documents: 5, lastActivity: '2 hours ago' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '+1 234-567-8901', documents: 3, lastActivity: '1 day ago' },
@@ -9,27 +12,27 @@ const Clients = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('nav.clients')}</h1>
         <button className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Add Client
+          {t('clients.addClient')}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Total Clients</p>
+          <p className="text-sm text-gray-500 mb-2">{t('clients.totalClients')}</p>
           <h3 className="text-3xl font-bold text-gray-900">321</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">Active This Month</p>
+          <p className="text-sm text-gray-500 mb-2">{t('clients.activeClients')}</p>
           <h3 className="text-3xl font-bold text-green-600">156</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <p className="text-sm text-gray-500 mb-2">New This Week</p>
+          <p className="text-sm text-gray-500 mb-2">{t('clients.newThisWeek')}</p>
           <h3 className="text-3xl font-bold text-blue-600">23</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -65,7 +68,7 @@ const Clients = () => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                {client.documents} documents
+                {client.documents} {t('admin.documents')}
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +78,7 @@ const Clients = () => {
               </div>
             </div>
             <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-              View Profile
+              {t('dashboard.viewProfile')}
             </button>
           </div>
         ))}
