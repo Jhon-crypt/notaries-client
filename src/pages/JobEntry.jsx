@@ -351,20 +351,27 @@ const JobEntry = () => {
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.uploadPDF')}</td>
                     {recipients.map(recipient => (
                       <td key={`pdf-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
-                        <label className="block">
-                          <input
-                            type="file"
-                            accept=".pdf,application/pdf"
-                            onChange={(e) => handleFileUpload(recipient.id, e.target.files[0])}
-                            className="hidden"
-                          />
-                          <div className="px-4 py-2 bg-gray-500 text-white rounded-lg text-center cursor-pointer hover:bg-gray-600 transition-colors text-sm font-medium">
-                            {t('jobEntry.uploadPDF')}
-                          </div>
-                        </label>
-                        {recipient.pdfFile && (
-                          <p className="text-xs text-green-600 mt-1 truncate">{recipient.pdfFile.name}</p>
-                        )}
+                        <div className="flex flex-col gap-2">
+                          {/* File Upload Button */}
+                          <label className="block">
+                            <input
+                              type="file"
+                              accept=".pdf,application/pdf,image/*"
+                              capture="environment"
+                              onChange={(e) => handleFileUpload(recipient.id, e.target.files[0])}
+                              className="hidden"
+                            />
+                            <div className="px-4 py-2 bg-gray-500 text-white rounded-lg text-center cursor-pointer hover:bg-gray-600 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              {t('jobEntry.uploadPDF')}
+                            </div>
+                          </label>
+                          {recipient.pdfFile && (
+                            <p className="text-xs text-green-600 truncate">✓ {recipient.pdfFile.name}</p>
+                          )}
+                        </div>
                       </td>
                     ))}
                   </tr>

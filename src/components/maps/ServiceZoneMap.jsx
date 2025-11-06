@@ -1,88 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
-const ServiceZoneMap = ({ value, onChange }) => {
-  const [isMapReady, setIsMapReady] = useState(false);
+const ServiceZoneMap = ({ onChange }) => {
   const [drawnZones, setDrawnZones] = useState([]);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const drawingManagerRef = useRef(null);
 
-  // Check if Google Maps API is loaded
-  useEffect(() => {
-    if (window.google && window.google.maps) {
-      setIsMapReady(true);
-      initializeMap();
-    } else {
-      // Google Maps not loaded - show placeholder
-      console.warn('Google Maps API not loaded. Please add VITE_GOOGLE_MAPS_API_KEY to your .env file');
-    }
-  }, []);
-
-  const initializeMap = () => {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    // Initialize map centered on default location
-    const map = new window.google.maps.Map(mapRef.current, {
-      center: { lat: 40.7128, lng: -74.0060 }, // New York City
-      zoom: 10,
-      mapTypeControl: true,
-      streetViewControl: false,
-    });
-
-    mapInstanceRef.current = map;
-
-    // Initialize Drawing Manager for service zones
-    const drawingManager = new window.google.maps.drawing.DrawingManager({
-      drawingMode: null,
-      drawingControl: true,
-      drawingControlOptions: {
-        position: window.google.maps.ControlPosition.TOP_CENTER,
-        drawingModes: [
-          window.google.maps.drawing.OverlayType.POLYGON,
-          window.google.maps.drawing.OverlayType.CIRCLE,
-        ],
-      },
-      polygonOptions: {
-        fillColor: '#22c55e',
-        fillOpacity: 0.3,
-        strokeWeight: 2,
-        strokeColor: '#16a34a',
-        clickable: true,
-        editable: true,
-        draggable: true,
-      },
-      circleOptions: {
-        fillColor: '#22c55e',
-        fillOpacity: 0.3,
-        strokeWeight: 2,
-        strokeColor: '#16a34a',
-        clickable: true,
-        editable: true,
-        draggable: true,
-      },
-    });
-
-    drawingManager.setMap(map);
-    drawingManagerRef.current = drawingManager;
-
-    // Listen for zone creation
-    window.google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
-      const newZone = {
-        type: event.type,
-        overlay: event.overlay,
-      };
-      
-      setDrawnZones(prev => [...prev, newZone]);
-      
-      // Convert zones to format for backend
-      updateZonesData([...drawnZones, newZone]);
-
-      // Add delete button to overlay
-      addDeleteButton(event.overlay, newZone);
-    });
-  };
-
-  const updateZonesData = (zones) => {
+  const updateZonesData = useCallback((zones) => {
     // Convert zones to serializable format for backend
     const zonesData = zones.map(zone => {
       if (zone.type === 'circle') {
@@ -107,12 +31,12 @@ const ServiceZoneMap = ({ value, onChange }) => {
     }).filter(Boolean);
 
     onChange(JSON.stringify(zonesData));
-  };
+  }, [onChange]);
 
-  const addDeleteButton = (overlay, zone) => {
+  const addDeleteButton = useCallback((overlay) => {
     // Add click listener to delete zone
     window.google.maps.event.addListener(overlay, 'rightclick', () => {
-      if (window.confirm('Delete this service zone?')) {
+      if (window.confirm('¿Eliminar esta zona de servicio? / Delete this service zone?')) {
         overlay.setMap(null);
         setDrawnZones(prev => {
           const updated = prev.filter(z => z.overlay !== overlay);
@@ -121,7 +45,99 @@ const ServiceZoneMap = ({ value, onChange }) => {
         });
       }
     });
-  };
+  }, [updateZonesData]);
+
+  const initializeMap = useCallback(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    // Default location: Lima, Peru (as per client requirement - Peruvian context)
+    const defaultLocation = { lat: -12.0464, lng: -77.0428 }; // Lima, Peru
+    
+    // Initialize map centered on Lima, Peru
+    const map = new window.google.maps.Map(mapRef.current, {
+      center: defaultLocation,
+      zoom: 12,
+      mapTypeControl: true,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
+
+    mapInstanceRef.current = map;
+    
+    // Add default pin/marker at notary's address
+    new window.google.maps.Marker({
+      position: defaultLocation,
+      map: map,
+      title: "Ubicación de Notaría",
+      icon: {
+        path: window.google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        fillColor: "#3B82F6",
+        fillOpacity: 1,
+        strokeColor: "#1E40AF",
+        strokeWeight: 2,
+      },
+    });
+
+    // Initialize Drawing Manager for service zones
+    const drawingManager = new window.google.maps.drawing.DrawingManager({
+      drawingMode: window.google.maps.drawing.OverlayType.POLYGON, // Start with polygon mode active
+      drawingControl: true,
+      drawingControlOptions: {
+        position: window.google.maps.ControlPosition.TOP_CENTER,
+        drawingModes: [
+          window.google.maps.drawing.OverlayType.POLYGON,
+          window.google.maps.drawing.OverlayType.CIRCLE,
+        ],
+      },
+      polygonOptions: {
+        fillColor: '#22c55e',
+        fillOpacity: 0.35,
+        strokeWeight: 3,
+        strokeColor: '#16a34a',
+        clickable: true,
+        editable: true,
+        draggable: true,
+        zIndex: 1,
+      },
+      circleOptions: {
+        fillColor: '#3B82F6',
+        fillOpacity: 0.35,
+        strokeWeight: 3,
+        strokeColor: '#1E40AF',
+        clickable: true,
+        editable: true,
+        draggable: true,
+        zIndex: 1,
+      },
+    });
+
+    drawingManager.setMap(map);
+    drawingManagerRef.current = drawingManager;
+
+    // Listen for zone creation
+    window.google.maps.event.addListener(drawingManager, 'overlaycomplete', (event) => {
+      const newZone = {
+        type: event.type,
+        overlay: event.overlay,
+      };
+      
+      setDrawnZones(prev => [...prev, newZone]);
+      
+      // Add delete button to overlay
+      addDeleteButton(event.overlay);
+    });
+  }, [addDeleteButton]);
+
+  // Check if Google Maps API is loaded
+  useEffect(() => {
+    if (window.google && window.google.maps) {
+      initializeMap();
+    } else {
+      // Google Maps not loaded - show placeholder
+      console.warn('Google Maps API not loaded. Please add VITE_GOOGLE_MAPS_API_KEY to your .env file');
+    }
+  }, [initializeMap]);
 
   const clearAllZones = () => {
     if (window.confirm('Clear all service zones?')) {
@@ -194,13 +210,14 @@ const ServiceZoneMap = ({ value, onChange }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div className="flex-1 text-xs text-blue-700">
-            <p className="font-semibold mb-1">How to use:</p>
+            <p className="font-semibold mb-1">Cómo usar / How to use:</p>
             <ul className="list-disc list-inside space-y-0.5">
-              <li>Click polygon or circle tool in the map toolbar</li>
-              <li>Draw your service area on the map</li>
-              <li>You can draw multiple zones</li>
-              <li>Right-click on a zone to delete it</li>
-              <li>Drag zones to reposition them</li>
+              <li>El pin azul marca la ubicación de la notaría / Blue pin marks notary location</li>
+              <li>Haz clic en herramienta polígono o círculo / Click polygon or circle tool at top</li>
+              <li>Dibuja tu área de servicio / Draw your service area on the map</li>
+              <li>Puedes dibujar múltiples zonas / You can draw multiple zones</li>
+              <li>Clic derecho para eliminar / Right-click on a zone to delete it</li>
+              <li>Arrastra zonas para reposicionar / Drag zones to reposition them</li>
             </ul>
           </div>
         </div>

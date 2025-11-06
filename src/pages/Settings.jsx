@@ -1,11 +1,60 @@
 import { useLanguage } from '../context/LanguageContext';
 
 const Settings = () => {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">{t('nav.settings')}</h1>
+
+      {/* Language Settings - PRIMARY */}
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 shadow-sm border-2 border-blue-200">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          </svg>
+          {t('settings.language')}
+        </h2>
+        <p className="text-sm text-gray-600 mb-4">
+          {language === 'es' 
+            ? 'Selecciona el idioma de la interfaz. Por defecto: Español' 
+            : 'Select interface language. Default: Spanish'}
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => setLanguage('es')}
+            className={`px-6 py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+              language === 'es'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-300'
+            }`}
+          >
+            <span className="text-2xl">🇪🇸</span>
+            <span>{t('settings.spanish')}</span>
+            {language === 'es' && (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </button>
+          <button
+            onClick={() => setLanguage('en')}
+            className={`px-6 py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+              language === 'en'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-300'
+            }`}
+          >
+            <span className="text-2xl">🇺🇸</span>
+            <span>{t('settings.english')}</span>
+            {language === 'en' && (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Account Settings */}
       <div className="bg-white rounded-xl p-6 shadow-sm">
