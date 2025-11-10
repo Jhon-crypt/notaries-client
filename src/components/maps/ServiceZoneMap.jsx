@@ -185,8 +185,8 @@ const ServiceZoneMap = ({ onChange }) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Draw on the map to define your service areas
+        <p className="text-sm font-semibold text-gray-900">
+          Defina su zona de servicio en el mapa con el polígono o círculo
         </p>
         {drawnZones.length > 0 && (
           <button

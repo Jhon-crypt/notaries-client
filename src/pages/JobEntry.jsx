@@ -7,6 +7,8 @@ const JobEntry = () => {
   
   const [sender, setSender] = useState({
     dni: '',
+    cellPhone: '',
+    email: '',
     address: '',
   });
 
@@ -103,7 +105,7 @@ const JobEntry = () => {
         <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-4 sm:p-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase">{t('jobEntry.sender')}</h2>
           
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">
                 {t('jobEntry.dni')}
@@ -115,6 +117,36 @@ const JobEntry = () => {
                 onChange={handleSenderChange}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="12345678-9"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-900 mb-2">
+                {t('jobEntry.cellPhone')}
+              </label>
+              <input
+                type="tel"
+                name="cellPhone"
+                value={sender.cellPhone}
+                onChange={handleSenderChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="+51 999 999 999"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-900 mb-2">
+                {t('jobEntry.senderEmail')}
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={sender.email}
+                onChange={handleSenderChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="correo@ejemplo.com"
                 required
               />
             </div>
@@ -133,6 +165,9 @@ const JobEntry = () => {
                 required
               />
             </div>
+          </div>
+
+          <div className="space-y-4">
 
             <div className="flex items-center gap-3">
               <label className="text-sm font-bold text-gray-900">
@@ -272,7 +307,7 @@ const JobEntry = () => {
                     ))}
                   </tr>
 
-                  {/* Delivery Method */}
+                  {/* Delivery Method - STANDARD/RÁPIDO/URGENTE */}
                   <tr>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.deliveryMethod')}</td>
                     {recipients.map(recipient => (
@@ -280,19 +315,19 @@ const JobEntry = () => {
                         <select
                           value={recipient.deliveryMethod}
                           onChange={(e) => handleRecipientChange(recipient.id, 'deliveryMethod', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-gray-100"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-gray-100 font-semibold"
                           required
                         >
                           <option value="">Seleccionar</option>
-                          <option value="home">Domicilio</option>
-                          <option value="office">Oficina</option>
-                          <option value="pickup">Recoger</option>
+                          <option value="standard">{t('jobEntry.standard')} (+0%)</option>
+                          <option value="fast">{t('jobEntry.fast')} (+50%)</option>
+                          <option value="urgent">{t('jobEntry.urgent')} (+80%)</option>
                         </select>
                       </td>
                     ))}
                   </tr>
 
-                  {/* Pickup Method */}
+                  {/* Pickup Method - Now RECIBO DE CARGO */}
                   <tr>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.pickupMethod')}</td>
                     {recipients.map(recipient => (
@@ -304,8 +339,8 @@ const JobEntry = () => {
                           required
                         >
                           <option value="">Seleccionar</option>
-                          <option value="agent">Agente</option>
-                          <option value="direct">Directo</option>
+                          <option value="office">{t('jobEntry.pickupOffice')}</option>
+                          <option value="email">{t('jobEntry.sendEmail')}</option>
                         </select>
                       </td>
                     ))}

@@ -343,10 +343,12 @@ export const en = {
 
   // Job Entry Form
   jobEntry: {
-    title: 'New Delivery Job',
+    title: 'NOTARIAL LETTER SHIPMENT',
     sender: 'SENDER',
     senderInfo: 'Sender Information',
     dni: 'DNI / RUC',
+    cellPhone: 'CELL PHONE',
+    senderEmail: 'EMAIL',
     address: 'ADDRESS',
     numRecipients: 'No. Recipients',
     recipient: 'RECIPIENT',
