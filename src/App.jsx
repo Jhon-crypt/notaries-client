@@ -10,6 +10,7 @@ import JobEntry from './pages/JobEntry';
 import Clients from './pages/Clients';
 import Notaries from './pages/Notaries';
 import Settings from './pages/Settings';
+import SystemSetup from './pages/SystemSetup';
 import Profile from './pages/Profile';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="notaries" element={<Notaries />} />
           <Route path="calendar" element={<div className="text-2xl font-bold">Calendar (Coming Soon)</div>} />
           <Route path="settings" element={<Settings />} />
+          <Route path="system-setup" element={<SystemSetup />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 

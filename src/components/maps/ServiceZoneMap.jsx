@@ -122,7 +122,11 @@ const ServiceZoneMap = ({ onChange }) => {
         overlay: event.overlay,
       };
       
-      setDrawnZones(prev => [...prev, newZone]);
+      setDrawnZones(prev => {
+        const updated = [...prev, newZone];
+        updateZonesData(updated);
+        return updated;
+      });
       
       // Add delete button to overlay
       addDeleteButton(event.overlay);

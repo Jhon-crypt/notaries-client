@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import PDFUpload from '../components/documents/PDFUpload';
 
@@ -28,6 +29,12 @@ const Documents = () => {
   };
 
   const userRole = localStorage.getItem('userRole') || 'client';
+  const signatureStatus = localStorage.getItem('clientSignatureStatus') || 'not_setup';
+  const showSignatureReminder = userRole === 'client' && signatureStatus !== 'active';
+  const isSignaturePending = signatureStatus === 'pending';
+  const signatureReminderTitle = isSignaturePending ? t('client.signatureProcessingTitle') : t('client.digitalSignatureNotSetup');
+  const signatureReminderDescription = isSignaturePending ? t('client.signatureProcessingDescription') : t('client.someDocsRequire');
+  const signatureReminderAction = isSignaturePending ? t('client.trackSignatureRequest') : t('client.setupDigitalSignature');
 
   return (
     <div className="space-y-6">
@@ -38,6 +45,69 @@ const Documents = () => {
             {userRole === 'notary' ? 'Upload and certify PDF documents' : 'View your certified documents'}
           </p>
         </div>
+      {showSignatureReminder && (
+        <div
+          className={`rounded-xl border-2 p-4 sm:p-5 mb-6 ${
+            isSignaturePending ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div
+                className={`p-2 rounded-lg ${
+                  isSignaturePending ? 'bg-blue-100' : 'bg-amber-100'
+                }`}
+              >
+                <svg
+                  className={`w-6 h-6 ${isSignaturePending ? 'text-blue-600' : 'text-amber-600'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      isSignaturePending
+                        ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                        : 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                    }
+                  />
+                </svg>
+              </div>
+              <div>
+                <h2
+                  className={`text-base font-semibold ${
+                    isSignaturePending ? 'text-blue-900' : 'text-amber-900'
+                  }`}
+                >
+                  {signatureReminderTitle}
+                </h2>
+                <p className={`text-sm mt-1 ${isSignaturePending ? 'text-blue-700' : 'text-amber-700'}`}>
+                  {signatureReminderDescription}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/dashboard/profile"
+                className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                  isSignaturePending
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-amber-600 text-white hover:bg-amber-700'
+                }`}
+              >
+                {signatureReminderAction}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H7" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
         {userRole === 'notary' && (
           <button 
             onClick={() => setShowUpload(!showUpload)}

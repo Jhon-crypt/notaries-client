@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const ClientDashboard = () => {
   const { t } = useLanguage();
-  const [hasDigitalSignature, setHasDigitalSignature] = useState(false);
+  const [signatureStatus, setSignatureStatus] = useState(() => localStorage.getItem('clientSignatureStatus') || 'not_setup');
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [signatureRequestSent, setSignatureRequestSent] = useState(false);
+  const [autoPromptShown, setAutoPromptShown] = useState(false);
 
   // Mock data for received documents
-  const recentDocuments = [
+  const recentDocuments = useMemo(() => [
     {
       id: 1,
       name: 'Property_Deed.pdf',
@@ -17,7 +18,8 @@ const ClientDashboard = () => {
       date: '2 hours ago',
       status: 'verified',
       requiresSignature: true,
-      signed: false
+      signed: false,
+      deliveryStatus: 'pending_confirmation',
     },
     {
       id: 2,
@@ -26,7 +28,8 @@ const ClientDashboard = () => {
       date: '1 day ago',
       status: 'verified',
       requiresSignature: true,
-      signed: true
+      signed: true,
+      deliveryStatus: 'confirmed',
     },
     {
       id: 3,
@@ -35,19 +38,67 @@ const ClientDashboard = () => {
       date: '3 days ago',
       status: 'pending',
       requiresSignature: false,
-      signed: false
+      signed: false,
+      deliveryStatus: 'pending_confirmation',
     },
-  ];
+  ], []);
+
+  const documentsSent = recentDocuments.length;
+  const pendingDelivery = recentDocuments.filter((doc) => doc.deliveryStatus === 'pending_confirmation').length;
+  const awaitingSignature = recentDocuments.filter((doc) => doc.requiresSignature && !doc.signed).length;
+
+  const setClientSignatureStatus = (status) => {
+    setSignatureStatus(status);
+    localStorage.setItem('clientSignatureStatus', status);
+  };
+
+  useEffect(() => {
+    const syncSignatureStatus = () => {
+      const stored = localStorage.getItem('clientSignatureStatus') || 'not_setup';
+      setSignatureStatus(stored);
+    };
+
+    window.addEventListener('storage', syncSignatureStatus);
+    return () => window.removeEventListener('storage', syncSignatureStatus);
+  }, []);
+
+  useEffect(() => {
+    if (signatureStatus === 'active' || autoPromptShown) return;
+    const needsSignature = awaitingSignature > 0;
+    if (needsSignature) {
+      setAutoPromptShown(true);
+      setSignatureRequestSent(false);
+      setShowSignatureModal(true);
+    }
+  }, [signatureStatus, awaitingSignature, autoPromptShown]);
+
+  const handleOpenSignatureModal = () => {
+    setSignatureRequestSent(false);
+    setShowSignatureModal(true);
+  };
 
   const handleRequestSignature = () => {
     setSignatureRequestSent(true);
-    setTimeout(() => setShowSignatureModal(false), 2000);
+    setClientSignatureStatus('pending');
+    setTimeout(() => setShowSignatureModal(false), 1800);
   };
 
   const handleGenerateOnTheFly = () => {
-    setHasDigitalSignature(true);
+    setClientSignatureStatus('active');
     setShowSignatureModal(false);
+    setSignatureRequestSent(false);
+    setAutoPromptShown(true);
   };
+
+  const handleRemindLater = () => {
+    setClientSignatureStatus('later');
+    setShowSignatureModal(false);
+    setSignatureRequestSent(false);
+    setAutoPromptShown(true);
+  };
+
+  const signatureNeedsAction = signatureStatus !== 'active';
+  const isPendingSignature = signatureStatus === 'pending';
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -58,26 +109,94 @@ const ClientDashboard = () => {
       </div>
 
       {/* Digital Signature Status */}
-      {!hasDigitalSignature && (
-        <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 sm:p-6">
-          <div className="flex items-start justify-between">
+      {signatureNeedsAction && (
+        <div
+          className={`rounded-xl border-2 p-4 sm:p-6 ${
+            isPendingSignature
+              ? 'bg-blue-50 border-blue-200'
+              : 'bg-amber-50 border-amber-200'
+          }`}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-amber-100 rounded-lg">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <div
+                className={`p-3 rounded-lg ${
+                  isPendingSignature ? 'bg-blue-100' : 'bg-amber-100'
+                }`}
+              >
+                <svg
+                  className={`w-8 h-8 ${isPendingSignature ? 'text-blue-600' : 'text-amber-600'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      isPendingSignature
+                        ? 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                        : 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                    }
+                  />
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-amber-900 mb-1">{t('client.digitalSignatureNotSetup')}</h3>
-                <p className="text-sm text-amber-700 mb-4">
-                  {t('client.someDocsRequire')}
-                </p>
-                <button
-                  onClick={() => setShowSignatureModal(true)}
-                  className="px-6 py-2.5 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 transition-colors"
+                <div className="flex items-center gap-2 mb-1">
+                  <h3
+                    className={`text-lg font-semibold ${
+                      isPendingSignature ? 'text-blue-900' : 'text-amber-900'
+                    }`}
+                  >
+                    {isPendingSignature
+                      ? t('client.signatureProcessingTitle')
+                      : t('client.digitalSignatureNotSetup')}
+                  </h3>
+                  {awaitingSignature > 0 && (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        isPendingSignature ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                      }`}
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+                      </svg>
+                      {t('client.awaitingSignatureCount', { count: awaitingSignature })}
+                    </span>
+                  )}
+                </div>
+                <p
+                  className={`text-sm mb-3 ${
+                    isPendingSignature ? 'text-blue-700' : 'text-amber-700'
+                  }`}
                 >
-                  {t('client.setupDigitalSignature')}
-                </button>
+                  {isPendingSignature
+                    ? t('client.signatureProcessingDescription')
+                    : t('client.someDocsRequire')}
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button
+                    onClick={handleOpenSignatureModal}
+                    className={`px-6 py-2.5 rounded-lg font-semibold transition-colors ${
+                      isPendingSignature
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-amber-600 text-white hover:bg-amber-700'
+                    }`}
+                  >
+                    {isPendingSignature
+                      ? t('client.trackSignatureRequest')
+                      : t('client.setupDigitalSignature')}
+                  </button>
+                  {!isPendingSignature && (
+                    <button
+                      onClick={handleRemindLater}
+                      className="px-6 py-2.5 rounded-lg border border-amber-300 text-amber-800 font-semibold hover:bg-amber-100 transition-colors"
+                    >
+                      {t('profile.digitalSignatureLater')}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -94,11 +213,18 @@ const ClientDashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-xs text-blue-600 font-medium">+3 {t('dashboard.thisWeek')}</span>
+          <span className="text-xs text-blue-600 font-medium">
+            {t('client.pendingConfirmationShort', { count: pendingDelivery })}
+          </span>
           </div>
           <p className="text-sm text-gray-500 mb-1">{t('client.totalDocuments')}</p>
-          <h3 className="text-3xl font-bold text-gray-900">12</h3>
-          <p className="text-xs text-gray-400 mt-2">{t('client.receivedFromNotaries')}</p>
+        <h3 className="text-3xl font-bold text-gray-900">{documentsSent}</h3>
+        <p className="text-xs text-gray-500 mt-2">
+          {t('client.documentsSentCount', { count: documentsSent })}
+        </p>
+        <p className="text-xs text-orange-600 font-semibold mt-1">
+          {t('client.pendingConfirmationCount', { count: pendingDelivery })}
+        </p>
         </div>
 
         {/* Pending Signatures */}
@@ -112,7 +238,7 @@ const ClientDashboard = () => {
             <span className="text-xs text-orange-600 font-medium">{t('client.actionNeeded')}</span>
           </div>
           <p className="text-sm text-gray-500 mb-1">{t('client.pendingSignatures')}</p>
-          <h3 className="text-3xl font-bold text-gray-900">1</h3>
+        <h3 className="text-3xl font-bold text-gray-900">{awaitingSignature}</h3>
           <p className="text-xs text-gray-400 mt-2">{t('client.awaitingSignature')}</p>
         </div>
 
@@ -353,6 +479,21 @@ const ClientDashboard = () => {
                     <div>
                       <p className="font-semibold text-gray-900 group-hover:text-green-600">{t('client.generateNow')}</p>
                       <p className="text-xs text-gray-600 mt-1">{t('client.temporarySignature')}</p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={handleRemindLater}
+                  className="w-full p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-amber-400 hover:bg-amber-50 transition-all text-left"
+                >
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="font-semibold text-gray-900">{t('profile.digitalSignatureLater')}</p>
+                      <p className="text-xs text-gray-600 mt-1">{t('client.remindLaterDescription')}</p>
                     </div>
                   </div>
                 </button>
