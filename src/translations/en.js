@@ -51,6 +51,9 @@ export const en = {
     calendar: 'Calendar',
     settings: 'Settings',
     profile: 'Profile',
+    myDocuments: 'My Documents',
+    coins: 'Coins',
+    systemSetup: 'System Setup',
   },
 
   // Authentication pages
@@ -60,6 +63,7 @@ export const en = {
     rememberMe: 'Remember me',
     forgotPassword: 'Forgot password?',
     signIn: 'Sign In',
+    passwordPlaceholder: 'Enter your password',
     dontHaveAccount: "Don't have an account?",
     alreadyHaveAccount: 'Already have an account?',
     createAccount: 'Create Account',
@@ -155,14 +159,21 @@ export const en = {
     documentActivity: 'Document Activity',
     healthy: 'Healthy',
     last30Days: 'Last 30 days',
+    last7Days: 'Last 7 days',
+    last24Hours: 'Last 24 hours',
     validationRate: 'Validation Rate',
     avgProcessingTime: 'Avg. Processing Time',
     validationSuccess: 'Validation Success',
     successRate: 'This Month',
     documentsPendingValidation: 'documents pending validation',
+    successComparedLastMonth: 'Success rate compared to last month',
     recentDocuments: 'Recent Documents',
     topNotaries: 'Top Notaries',
     securityCompliance: 'Security & Compliance',
+    casesCount: '{{count}} cases',
+    passwordUpdate: 'Password update',
+    passwordUpdateFrequency: '{{days}} days',
+    reviewSecuritySettings: 'Review security settings',
     sslEncrypted: 'SSL Encrypted',
     active: 'Active',
     twoFactorEnabled: '2FA Enabled',
@@ -354,6 +365,12 @@ export const en = {
     cases: 'Cases',
     viewProfile: 'View Profile',
     verifyExplanation: 'Review credentials, confirm CAL/CNL numbers, and activate the account so the notary can receive jobs.',
+  },
+
+  // Coins Page
+  coins: {
+    title: 'Coin wallet & marketplace',
+    description: 'Soon you\'ll be able to purchase and redeem coins to prioritize courier pickups and digital certifications. For now, contact support if you need to top up your balance.',
   },
 
   // Clients Page

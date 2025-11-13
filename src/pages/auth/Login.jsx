@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
+import LanguageToggle from '../../components/common/LanguageToggle';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -47,6 +50,8 @@ const Login = () => {
     });
   };
 
+  const passwordPlaceholder = t('auth.passwordPlaceholder');
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
@@ -62,17 +67,17 @@ const Login = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">NotaryChain</h1>
-                <p className="text-sm text-gray-500">Secure Document Delivery</p>
+                <p className="text-sm text-gray-500">{t('auth.secureDocumentDelivery')}</p>
               </div>
             </div>
 
             {/* Features */}
             <div className="space-y-4 mt-12">
               <h2 className="text-2xl font-bold text-gray-900">
-                Welcome to Secure Notarial Document Delivery System
+                {t('auth.welcomeToSecure')}
               </h2>
               <p className="text-gray-600">
-                Authenticate, upload, and deliver certified PDF documents to clients with confidence.
+                {t('auth.authenticateUpload')}
               </p>
               
               <div className="space-y-3 mt-8">
@@ -83,8 +88,8 @@ const Login = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Secure & Encrypted</h3>
-                    <p className="text-sm text-gray-600">End-to-end encryption for all documents</p>
+                    <h3 className="font-semibold text-gray-900">{t('auth.secureEncrypted')}</h3>
+                    <p className="text-sm text-gray-600">{t('auth.endToEndEncryption')}</p>
                   </div>
                 </div>
 
@@ -95,8 +100,8 @@ const Login = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">PDF Validation</h3>
-                    <p className="text-sm text-gray-600">Automated document verification system</p>
+                    <h3 className="font-semibold text-gray-900">{t('auth.pdfValidation')}</h3>
+                    <p className="text-sm text-gray-600">{t('auth.automatedVerification')}</p>
                   </div>
                 </div>
 
@@ -107,8 +112,8 @@ const Login = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Multi-User Access</h3>
-                    <p className="text-sm text-gray-600">Notaries, clients, and admins</p>
+                    <h3 className="font-semibold text-gray-900">{t('auth.multiUserAccess')}</h3>
+                    <p className="text-sm text-gray-600">{t('auth.notariesClientsAdmins')}</p>
                   </div>
                 </div>
               </div>
@@ -119,26 +124,33 @@ const Login = () => {
         {/* Right Side - Login Form */}
         <div className="w-full">
           <div className="bg-white rounded-2xl shadow-sm p-8 md:p-10">
-            {/* Mobile Logo */}
-            <div className="md:hidden flex items-center justify-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+            <div className="flex items-center justify-between mb-6">
+              <div className="md:hidden flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">NotaryChain</h1>
+                  <p className="text-xs text-gray-500">{t('auth.secureDocumentDelivery')}</p>
+                </div>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">NotaryChain</h1>
+              <LanguageToggle compact className="ml-auto" />
             </div>
-
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-              <p className="text-gray-600">Sign in to your notary account</p>
+            {/* Mobile Logo */}
+            <div className="md:hidden flex items-center justify-between gap-3 mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">{t('auth.welcomeBack')}</h2>
+                <p className="text-gray-600 text-sm">{t('auth.signInToAccount')}</p>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+                  {t('common.email')}
                 </label>
                 <input
                   type="email"
@@ -155,7 +167,7 @@ const Login = () => {
               {/* Password */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+                  {t('common.password')}
                 </label>
                 <input
                   type="password"
@@ -164,7 +176,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                  placeholder="Enter your password"
+                  placeholder={passwordPlaceholder === 'auth.passwordPlaceholder' ? '••••••••' : passwordPlaceholder}
                   required
                 />
               </div>
@@ -180,11 +192,11 @@ const Login = () => {
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
                   <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
-                    Remember me
+                    {t('auth.rememberMe')}
                   </label>
                 </div>
                 <Link to="/forgot-password" className="text-sm text-green-600 hover:text-green-700 font-medium">
-                  Forgot password?
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
 
@@ -193,7 +205,7 @@ const Login = () => {
                 type="submit"
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-sm hover:shadow-md"
               >
-                Sign In
+                {t('auth.signIn')}
               </button>
 
               {/* Divider */}
@@ -202,7 +214,7 @@ const Login = () => {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">Or continue with</span>
+                  <span className="px-4 bg-white text-gray-500">{t('auth.orContinueWith')}</span>
                 </div>
               </div>
 
@@ -218,7 +230,7 @@ const Login = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  <span className="text-sm font-medium text-gray-700">Google</span>
+                  <span className="text-sm font-medium text-gray-700">{t('auth.google')}</span>
                 </button>
                 <button
                   type="button"
@@ -227,7 +239,7 @@ const Login = () => {
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
                   </svg>
-                  <span className="text-sm font-medium text-gray-700">Microsoft</span>
+                  <span className="text-sm font-medium text-gray-700">{t('auth.microsoft')}</span>
                 </button>
               </div>
             </form>
@@ -235,19 +247,19 @@ const Login = () => {
             {/* Sign Up Link */}
             <div className="mt-8 text-center space-y-3">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
+                {t('auth.dontHaveAccount')}{' '}
                 <Link to="/signup" className="text-green-600 hover:text-green-700 font-semibold">
-                  Sign up
+                  {t('common.signup')}
                 </Link>
               </p>
               
               {/* Admin Login Note */}
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-xs">
-                <p className="text-purple-900 font-semibold mb-1">Administrator Login</p>
+                <p className="text-purple-900 font-semibold mb-1">{t('auth.administrator')}</p>
                 <p className="text-purple-700">
-                  Admins use this same login page. Don't have admin credentials?{' '}
+                  {t('auth.adminLoginNote')}{' '}
                   <Link to="/admin/signup" className="text-purple-600 hover:text-purple-800 font-semibold underline">
-                    Register as Admin
+                    {t('auth.registerAsAdmin')}
                   </Link>
                 </p>
               </div>
@@ -256,7 +268,7 @@ const Login = () => {
 
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 mt-6">
-            © 2024 NotaryChain. All rights reserved.
+            © 2024 NotaryChain. {t('common.allRightsReserved')}
           </p>
         </div>
       </div>

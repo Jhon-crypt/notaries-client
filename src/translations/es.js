@@ -51,6 +51,9 @@ export const es = {
     calendar: 'Calendario',
     settings: 'Configuración',
     profile: 'Perfil',
+    myDocuments: 'Mis Documentos',
+    coins: 'Monedas',
+    systemSetup: 'Configuración del Sistema',
   },
 
   // Páginas de autenticación
@@ -60,6 +63,7 @@ export const es = {
     rememberMe: 'Recuérdame',
     forgotPassword: '¿Olvidaste tu contraseña?',
     signIn: 'Iniciar Sesión',
+    passwordPlaceholder: 'Ingresa tu contraseña',
     dontHaveAccount: '¿No tienes una cuenta?',
     alreadyHaveAccount: '¿Ya tienes una cuenta?',
     createAccount: 'Crear Cuenta',
@@ -155,14 +159,21 @@ export const es = {
     documentActivity: 'Actividad de Documentos',
     healthy: 'Saludable',
     last30Days: 'Últimos 30 días',
+    last7Days: 'Últimos 7 días',
+    last24Hours: 'Últimas 24 horas',
     validationRate: 'Tasa de Validación',
     avgProcessingTime: 'Tiempo Promedio de Procesamiento',
     validationSuccess: 'Éxito de Validación',
     successRate: 'Este Mes',
     documentsPendingValidation: 'documentos pendientes de validación',
+    successComparedLastMonth: 'Tasa de éxito comparada con el mes pasado',
     recentDocuments: 'Documentos Recientes',
     topNotaries: 'Mejores Notarios',
     securityCompliance: 'Seguridad y Cumplimiento',
+    casesCount: '{{count}} casos',
+    passwordUpdate: 'Actualización de contraseña',
+    passwordUpdateFrequency: 'Cada {{days}} días',
+    reviewSecuritySettings: 'Revisar ajustes de seguridad',
     sslEncrypted: 'Encriptado SSL',
     active: 'Activo',
     twoFactorEnabled: '2FA Habilitado',
@@ -299,6 +310,12 @@ export const es = {
     cases: 'Casos',
     viewProfile: 'Ver Perfil',
     verifyExplanation: 'Revisa credenciales, valida los números CAL/CNL y activa la cuenta para que el notario reciba trabajos.',
+  },
+
+  // Página de Monedas
+  coins: {
+    title: 'Billetera y mercado de monedas',
+    description: 'Pronto podrás comprar y canjear monedas para priorizar recojos y certificaciones digitales. Por ahora, contacta al soporte si necesitas recargar tu saldo.',
   },
 
   // Página de Clientes

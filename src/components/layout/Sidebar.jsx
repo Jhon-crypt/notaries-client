@@ -4,74 +4,90 @@ import { useLanguage } from '../../context/LanguageContext';
 const Sidebar = () => {
   const location = useLocation();
   const { t } = useLanguage();
+  const userRole = localStorage.getItem('userRole') || 'notary';
 
-  const menuItems = [
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-        </svg>
-      ),
-      path: '/dashboard',
-      labelKey: 'nav.dashboard'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-      path: '/dashboard/documents',
-      labelKey: 'nav.documents'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-      ),
-      path: '/dashboard/job-entry',
-      labelKey: 'nav.newJob',
-      highlight: true
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-      path: '/dashboard/clients',
-      labelKey: 'nav.clients'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      ),
-      path: '/dashboard/notaries',
-      labelKey: 'nav.notaries'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-      path: '/dashboard/calendar',
-      labelKey: 'nav.calendar'
-    },
-    {
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      ),
-      path: '/dashboard/settings',
-      labelKey: 'nav.settings'
-    }
+  const baseIcons = {
+    dashboard: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+    ),
+    documents: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+    job: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      </svg>
+    ),
+    clients: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    ),
+    notaries: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    ),
+    calendar: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    settings: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+    coins: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6a6 3 0 110 6 6 3 0 010-6z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3c0 1.657-2.686 3-6 3s-6-1.343-6-3V9" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 13v3c0 1.657-2.686 3-6 3s-6-1.343-6-3v-3" />
+      </svg>
+    ),
+    systemSetup: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c1.657 0 3-.895 3-2s-1.343-2-3-2-3 .895-3 2 1.343 2 3 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.5 21a7.5 7.5 0 0115 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 15a4 4 0 118 0 4 4 0 01-8 0z" />
+      </svg>
+    ),
+  };
+
+  const notaryMenu = [
+    { icon: baseIcons.dashboard, path: '/dashboard', labelKey: 'nav.dashboard' },
+    { icon: baseIcons.documents, path: '/dashboard/documents', labelKey: 'nav.documents' },
+    { icon: baseIcons.job, path: '/dashboard/job-entry', labelKey: 'nav.newJob', highlight: true },
+    { icon: baseIcons.clients, path: '/dashboard/clients', labelKey: 'nav.clients' },
+    { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
+    { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
+    { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
+    { icon: baseIcons.coins, path: '/dashboard/coins', labelKey: 'nav.coins', mobileOnly: true, highlight: true },
   ];
+
+  const clientMenu = [
+    { icon: baseIcons.dashboard, path: '/dashboard', labelKey: 'nav.dashboard' },
+    { icon: baseIcons.documents, path: '/dashboard/documents', labelKey: 'nav.myDocuments' },
+    { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
+    { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
+    { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
+  ];
+
+  const adminMenu = [
+    { icon: baseIcons.dashboard, path: '/dashboard', labelKey: 'nav.dashboard' },
+    { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
+    { icon: baseIcons.clients, path: '/dashboard/clients', labelKey: 'nav.clients' },
+    { icon: baseIcons.systemSetup, path: '/dashboard/system-setup', labelKey: 'nav.systemSetup', highlight: true },
+    { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
+  ];
+
+  const menuItems = userRole === 'admin' ? adminMenu : userRole === 'client' ? clientMenu : notaryMenu;
+  const desktopItems = menuItems.filter((item) => !item.mobileOnly);
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -92,7 +108,7 @@ const Sidebar = () => {
 
         {/* Menu Items */}
         <nav className="flex-1 flex flex-col gap-2 w-full px-3">
-        {menuItems.map((item, index) => (
+        {desktopItems.map((item, index) => (
           <Link
             key={index}
             to={item.path}
@@ -137,7 +153,7 @@ const Sidebar = () => {
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 px-1 py-3 z-50 shadow-lg">
         <nav className="flex items-center justify-around max-w-screen-xl mx-auto">
-          {menuItems.slice(0, 5).map((item, index) => (
+          {menuItems.map((item, index) => (
             <Link
               key={index}
               to={item.path}

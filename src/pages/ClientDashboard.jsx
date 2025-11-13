@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import LanguageToggle from '../components/common/LanguageToggle';
 
 const ClientDashboard = () => {
   const { t } = useLanguage();
@@ -104,8 +105,13 @@ const ClientDashboard = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t('common.welcomeBack')}!</h1>
-        <p className="text-sm sm:text-base text-blue-100">{t('client.accessDocuments')}</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t('common.welcomeBack')}!</h1>
+            <p className="text-sm sm:text-base text-blue-100">{t('client.accessDocuments')}</p>
+          </div>
+          <LanguageToggle compact className="self-start sm:self-auto" />
+        </div>
       </div>
 
       {/* Digital Signature Status */}

@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import LanguageToggle from '../components/common/LanguageToggle';
 
 const AdminDashboard = () => {
   const { t } = useLanguage();
@@ -10,27 +12,30 @@ const AdminDashboard = () => {
     { id: 3, name: 'David Lee', email: 'david.lee@example.com', license: 'NOT-2024-047', state: 'NY', submittedDate: '1 day ago' },
   ];
 
-  const recentActivity = [
-    { id: 1, type: 'notary_approved', user: 'Sarah Williams', action: 'Notary verified and approved', time: '30 minutes ago', icon: 'check' },
-    { id: 2, type: 'document_validated', user: 'Michael Chen', action: 'Validated 5 documents', time: '1 hour ago', icon: 'document' },
-    { id: 3, type: 'client_registered', user: 'Emily Davis', action: 'New client registered', time: '2 hours ago', icon: 'user' },
-    { id: 4, type: 'system_update', user: 'System', action: 'Security patches applied', time: '4 hours ago', icon: 'shield' },
-  ];
+  const recentActivity = useMemo(() => [
+    { id: 1, type: 'notary_approved', user: 'Sarah Williams', description: t('admin.notaryApproved'), time: '30 minutes ago', icon: 'check' },
+    { id: 2, type: 'document_validated', user: 'Michael Chen', description: `${t('admin.documentValidated')} 5 ${t('admin.documents')}`, time: '1 hour ago', icon: 'document' },
+    { id: 3, type: 'client_registered', user: 'Emily Davis', description: t('admin.clientRegistered'), time: '2 hours ago', icon: 'user' },
+    { id: 4, type: 'system_update', user: 'System', description: t('admin.systemUpdate'), time: '4 hours ago', icon: 'shield' },
+  ], [t]);
 
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Admin Welcome Banner */}
       <div className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">{t('admin.administratorDashboard')}</h1>
             <p className="text-purple-100">{t('admin.manageUsers')}</p>
           </div>
-          <div className="hidden md:block">
-            <svg className="w-20 h-20 text-purple-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+          <div className="flex items-center justify-end gap-4">
+            <LanguageToggle compact />
+            <div className="hidden md:block">
+              <svg className="w-20 h-20 text-purple-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -162,18 +167,24 @@ const AdminDashboard = () => {
                         <span>•</span>
                         <span>{notary.state}</span>
                         <span>•</span>
-                        <span className="text-orange-600 font-medium">{notary.submittedDate}</span>
+                        <span className="text-orange-600 font-medium">
+                          {t('admin.submittedDate')}: {notary.submittedDate}
+                        </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject">
+                    <button
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title={t('admin.reject')}
+                      aria-label={t('admin.reject')}
+                    >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                     <button className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                      Verify
+                      {t('admin.verify')}
                     </button>
                   </div>
                 </div>
@@ -185,7 +196,7 @@ const AdminDashboard = () => {
         {/* Recent System Activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('admin.recentActivity')}</h2>
           </div>
 
           <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
@@ -221,7 +232,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                    <p className="text-sm text-gray-600">{activity.action}</p>
+                    <p className="text-sm text-gray-600">{activity.description}</p>
                     <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
                   </div>
                 </div>
@@ -241,8 +252,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Manage Notaries</h3>
-              <p className="text-sm text-gray-600">Verify, approve, and manage notary accounts</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('admin.manageNotaries')}</h3>
+              <p className="text-sm text-gray-600">{t('admin.verifyApprove')}</p>
             </div>
           </div>
         </Link>
@@ -255,8 +266,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Manage Users</h3>
-              <p className="text-sm text-gray-600">View and manage all client accounts</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('admin.manageUsersAction')}</h3>
+              <p className="text-sm text-gray-600">{t('admin.viewManageClients')}</p>
             </div>
           </div>
         </Link>
@@ -270,8 +281,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">System Settings</h3>
-              <p className="text-sm text-gray-600">Configure platform settings and preferences</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('admin.systemSettings')}</h3>
+              <p className="text-sm text-gray-600">{t('admin.configurePlatform')}</p>
             </div>
           </div>
         </Link>
@@ -279,7 +290,7 @@ const AdminDashboard = () => {
 
       {/* Security & Compliance Summary */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Security & Compliance</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-6">{t('admin.securityCompliance')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-50 rounded-lg">
@@ -288,8 +299,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">SSL Encrypted</p>
-              <p className="text-xs text-green-600 font-medium">Active</p>
+              <p className="text-sm font-semibold text-gray-900">{t('admin.sslEncrypted')}</p>
+              <p className="text-xs text-green-600 font-medium">{t('admin.active')}</p>
             </div>
           </div>
 
@@ -300,8 +311,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">2FA Enabled</p>
-              <p className="text-xs text-green-600 font-medium">87% users</p>
+              <p className="text-sm font-semibold text-gray-900">{t('admin.twoFactorEnabled')}</p>
+              <p className="text-xs text-green-600 font-medium">87% {t('admin.users')}</p>
             </div>
           </div>
 
@@ -312,8 +323,10 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">Backup Status</p>
-              <p className="text-xs text-green-600 font-medium">Last: 2h ago</p>
+              <p className="text-sm font-semibold text-gray-900">{t('admin.backupStatus')}</p>
+              <p className="text-xs text-green-600 font-medium">
+                {t('admin.platformHealthLastBackup', { time: '2h' })}
+              </p>
             </div>
           </div>
 
@@ -324,8 +337,8 @@ const AdminDashboard = () => {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">API Status</p>
-              <p className="text-xs text-green-600 font-medium">Operational</p>
+              <p className="text-sm font-semibold text-gray-900">{t('admin.apiStatus')}</p>
+              <p className="text-xs text-green-600 font-medium">{t('admin.operational')}</p>
             </div>
           </div>
         </div>

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ServiceZoneMap from '../../components/maps/ServiceZoneMap';
+import { useLanguage } from '../../context/LanguageContext';
+import LanguageToggle from '../../components/common/LanguageToggle';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1: Personal Information & Role
@@ -71,16 +74,22 @@ const Signup = () => {
       <div className="max-w-2xl w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">NotaryChain</h1>
+              <div className="text-left">
+                <h1 className="text-2xl font-bold text-gray-900">NotaryChain</h1>
+                <p className="text-xs text-gray-500">{t('auth.secureDocumentDelivery')}</p>
+              </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
-          <p className="text-gray-600">Join our secure document delivery platform</p>
+            <LanguageToggle compact />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.createYourAccount')}</h2>
+          <p className="text-gray-600">{t('auth.joinOurPlatform')}</p>
         </div>
 
         {/* Progress Steps */}

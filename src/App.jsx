@@ -12,6 +12,7 @@ import Notaries from './pages/Notaries';
 import Settings from './pages/Settings';
 import SystemSetup from './pages/SystemSetup';
 import Profile from './pages/Profile';
+import Coins from './pages/Coins';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="calendar" element={<div className="text-2xl font-bold">Calendar (Coming Soon)</div>} />
           <Route path="settings" element={<Settings />} />
           <Route path="system-setup" element={<SystemSetup />} />
+          <Route path="coins" element={<Coins />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 

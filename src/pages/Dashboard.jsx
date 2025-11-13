@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import ClientDashboard from './ClientDashboard';
 import AdminDashboard from './AdminDashboard';
+import LanguageToggle from '../components/common/LanguageToggle';
 
 const Dashboard = () => {
   const { t } = useLanguage();
@@ -20,6 +21,9 @@ const Dashboard = () => {
   // Show notary dashboard (default)
   return (
     <div className="space-y-4 sm:space-y-6">
+      <div className="flex justify-end">
+        <LanguageToggle compact />
+      </div>
       {/* Top Summary Cards (KPI Row) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Documents Validated */}
@@ -97,8 +101,8 @@ const Dashboard = () => {
             </div>
             <select className="text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5">
               <option>{t('dashboard.last30Days')}</option>
-              <option>Last 7 days</option>
-              <option>Last 24 hours</option>
+              <option>{t('dashboard.last7Days')}</option>
+              <option>{t('dashboard.last24Hours')}</option>
             </select>
           </div>
 
@@ -169,7 +173,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-500">Success rate compared to last month</p>
+            <p className="text-sm text-gray-500">{t('dashboard.successComparedLastMonth')}</p>
           </div>
         </div>
       </div>
@@ -246,7 +250,7 @@ const Dashboard = () => {
                   </svg>
                   <span className="text-sm font-semibold text-gray-900">4.9</span>
                 </div>
-                <p className="text-xs text-gray-500">234 cases</p>
+                <p className="text-xs text-gray-500">{t('dashboard.casesCount', { count: 234 })}</p>
               </div>
             </div>
             <div className="flex items-center justify-between py-3 border-l-4 border-blue-500 pl-4">
@@ -266,7 +270,7 @@ const Dashboard = () => {
                   </svg>
                   <span className="text-sm font-semibold text-gray-900">4.8</span>
                 </div>
-                <p className="text-xs text-gray-500">189 cases</p>
+                <p className="text-xs text-gray-500">{t('dashboard.casesCount', { count: 189 })}</p>
               </div>
             </div>
             <div className="flex items-center justify-between py-3 border-l-4 border-indigo-500 pl-4">
@@ -286,7 +290,7 @@ const Dashboard = () => {
                   </svg>
                   <span className="text-sm font-semibold text-gray-900">4.7</span>
                 </div>
-                <p className="text-xs text-gray-500">156 cases</p>
+                <p className="text-xs text-gray-500">{t('dashboard.casesCount', { count: 156 })}</p>
               </div>
             </div>
           </div>
@@ -302,32 +306,32 @@ const Dashboard = () => {
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">SSL Encrypted</span>
+                <span className="text-sm font-medium text-gray-900">{t('admin.sslEncrypted')}</span>
               </div>
-              <span className="text-xs text-green-600 font-medium">Active</span>
+              <span className="text-xs text-green-600 font-medium">{t('admin.active')}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">2FA Enabled</span>
+                <span className="text-sm font-medium text-gray-900">{t('admin.twoFactorEnabled')}</span>
               </div>
-              <span className="text-xs text-green-600 font-medium">Active</span>
+              <span className="text-xs text-green-600 font-medium">{t('admin.active')}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <span className="text-sm font-medium text-gray-900">Password Update</span>
+                <span className="text-sm font-medium text-gray-900">{t('dashboard.passwordUpdate')}</span>
               </div>
-              <span className="text-xs text-yellow-600 font-medium">90 days</span>
+              <span className="text-xs text-yellow-600 font-medium">{t('dashboard.passwordUpdateFrequency', { days: 90 })}</span>
             </div>
           </div>
 
           <button className="w-full px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-            Review Security Settings
+            {t('dashboard.reviewSecuritySettings')}
           </button>
         </div>
       </div>

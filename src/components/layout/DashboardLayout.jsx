@@ -1,8 +1,14 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import { initGoogleMaps } from '../../utils/loadGoogleMaps';
 
 const DashboardLayout = () => {
+  useEffect(() => {
+    initGoogleMaps();
+  }, []);
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
