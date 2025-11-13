@@ -285,7 +285,7 @@ const Documents = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -375,6 +375,75 @@ const Documents = () => {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="space-y-4 md:hidden">
+          {filteredDocuments.map((doc) => {
+            const partner =
+              doc.category === 'secondary' ? doc.secondaryNotary : doc.originatingNotary;
+            const statusColor =
+              doc.status === 'delivered'
+                ? 'bg-green-100 text-green-800'
+                : doc.status === 'pending_confirmation'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-purple-100 text-purple-800';
+            const badgeColor =
+              doc.category === 'secondary'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-gray-100 text-gray-600';
+
+            return (
+              <div key={doc.id} className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-mono text-sm text-gray-900">{doc.confirmation}</p>
+                    <p className="text-xs text-gray-500">{t('documents.confirmationHint')}</p>
+                  </div>
+                  <span className={`px-3 py-1 inline-flex items-center gap-1 text-xs font-semibold rounded-full ${statusColor}`}>
+                    {t(`documents.status.${doc.status}`)}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-sm text-gray-700">
+                  <div>
+                    <span className="font-semibold text-gray-900">{t('documents.senderColumn')}:</span> {doc.sender}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">{t('documents.dateSentColumn')}:</span> {doc.dateSent}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">{t('documents.recipientColumn')}:</span> {doc.recipient}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-900">{t('documents.partnerNotaryColumn')}:</span> {partner || t('documents.partnerNotaryFallback')}
+                  </div>
+                  <div>
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${badgeColor}`}>
+                      {doc.category === 'secondary'
+                        ? t('documents.categorySecondary')
+                        : t('documents.categoryIncoming')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button className="flex-1 text-center text-sm text-blue-600 font-semibold px-3 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors">
+                    {t('common.view')}
+                  </button>
+                  <button className="flex-1 text-center text-sm text-green-600 font-semibold px-3 py-2 rounded-lg border border-green-200 hover:bg-green-50 transition-colors">
+                    {t('common.download')}
+                  </button>
+                </div>
+
+                {(userRole === 'notary' || userRole === 'admin') && (
+                  <button className="w-full text-sm text-red-600 font-semibold px-3 py-2 rounded-lg border border-red-200 hover:bg-red-50 transition-colors">
+                    {t('common.delete')}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

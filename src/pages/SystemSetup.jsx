@@ -63,10 +63,10 @@ const SystemSetup = () => {
     }
   }, []);
 
-  const saveSection = (sectionKey) => {
+  const saveSection = (sectionMessage) => {
     const toSave = { ...config };
     localStorage.setItem(LOCAL_KEY, JSON.stringify(toSave));
-    setStatus(`${sectionKey} saved`);
+    setStatus(sectionMessage);
     setTimeout(() => setStatus(''), 2500);
   };
 
@@ -176,7 +176,7 @@ const SystemSetup = () => {
         </div>
         <div className="mt-4 flex justify-end">
           <button
-            onClick={() => saveSection('Service rates')}
+            onClick={() => saveSection(t('admin.parameters.saveRatesSuccess'))}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
             {t('admin.parameters.saveRates')}
@@ -238,7 +238,7 @@ const SystemSetup = () => {
         </div>
         <div className="mt-4 flex justify-end">
           <button
-            onClick={() => saveSection('Delivery windows')}
+            onClick={() => saveSection(t('admin.parameters.saveWindowsSuccess'))}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
             {t('admin.parameters.saveWindows')}
@@ -252,7 +252,7 @@ const SystemSetup = () => {
         <p className="text-sm text-gray-600 mb-4">{t('admin.parameters.notificationsDescription')}</p>
         <div className="grid grid-cols-1 gap-4">
           <div>
-            <label className="block text-sm text-gray-600">Email subject</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.emailSubjectLabel')}</label>
             <input
               type="text"
               value={config.notifications.emailSubject}
@@ -261,7 +261,7 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">{`Email body (use {{name}}, {{document}}, {{link}})`}</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.emailBodyLabel')}</label>
             <textarea
               rows={4}
               value={config.notifications.emailBody}
@@ -270,7 +270,7 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">{`SMS template (use {{document}})`}</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.smsTemplateLabel')}</label>
             <input
               type="text"
               value={config.notifications.smsTemplate}
@@ -285,7 +285,7 @@ const SystemSetup = () => {
                 checked={config.notifications.notifyOn.uploaded}
                 onChange={(e) => update('notifications.notifyOn.uploaded', e.target.checked)}
               />
-              <span className="text-sm text-gray-600">Notify on upload</span>
+              <span className="text-sm text-gray-600">{t('admin.parameters.notifyUploadLabel')}</span>
             </label>
             <label className="inline-flex items-center gap-2">
               <input
@@ -293,7 +293,7 @@ const SystemSetup = () => {
                 checked={config.notifications.notifyOn.certified}
                 onChange={(e) => update('notifications.notifyOn.certified', e.target.checked)}
               />
-              <span className="text-sm text-gray-600">Notify on certification</span>
+              <span className="text-sm text-gray-600">{t('admin.parameters.notifyCertifiedLabel')}</span>
             </label>
             <label className="inline-flex items-center gap-2">
               <input
@@ -301,13 +301,13 @@ const SystemSetup = () => {
                 checked={config.notifications.notifyOn.delivered}
                 onChange={(e) => update('notifications.notifyOn.delivered', e.target.checked)}
               />
-              <span className="text-sm text-gray-600">Notify on delivery</span>
+              <span className="text-sm text-gray-600">{t('admin.parameters.notifyDeliveredLabel')}</span>
             </label>
           </div>
         </div>
         <div className="mt-4 flex justify-end">
           <button
-            onClick={() => saveSection('Notifications')}
+            onClick={() => saveSection(t('admin.parameters.saveNotificationsSuccess'))}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
             {t('admin.parameters.saveNotifications')}
