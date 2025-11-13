@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import PDFUpload from '../components/documents/PDFUpload';
@@ -7,24 +7,60 @@ const Documents = () => {
   const { t } = useLanguage();
   const [showUpload, setShowUpload] = useState(false);
   const [documents, setDocuments] = useState([
-    { id: 1, name: 'Contract_Agreement.pdf', client: 'John Doe', date: '2024-01-15', status: 'Verified', size: '2.4 MB', certifiedBy: 'Sarah Williams', documentType: 'Contract' },
-    { id: 2, name: 'Property_Deed.pdf', client: 'Jane Smith', date: '2024-01-14', status: 'Pending', size: '1.8 MB', certifiedBy: 'Current User', documentType: 'Deed' },
-    { id: 3, name: 'Notarized_Will.pdf', client: 'Robert Johnson', date: '2024-01-13', status: 'Verified', size: '3.2 MB', certifiedBy: 'Michael Chen', documentType: 'Will' },
-    { id: 4, name: 'Power_of_Attorney.pdf', client: 'Emily Davis', date: '2024-01-12', status: 'Verified', size: '1.5 MB', certifiedBy: 'Jessica Martinez', documentType: 'Power of Attorney' },
+    {
+      id: 1,
+      confirmation: 'CN-10234',
+      sender: 'Notaría Central Lima',
+      dateSent: '2024-01-15',
+      recipient: 'Luis Paredes',
+      secondaryNotary: 'Notaría Surco Verde',
+      status: 'delivered',
+      category: 'secondary',
+    },
+    {
+      id: 2,
+      confirmation: 'CN-10218',
+      sender: 'Notaría Surco Verde',
+      dateSent: '2024-01-14',
+      recipient: 'María Quispe',
+      originatingNotary: 'Notaría Central Lima',
+      status: 'pending_confirmation',
+      category: 'incoming',
+    },
+    {
+      id: 3,
+      confirmation: 'CN-10209',
+      sender: 'Notaría Callao Express',
+      dateSent: '2024-01-13',
+      recipient: 'Ana Flores',
+      secondaryNotary: 'Notaría Miraflores',
+      status: 'in_transit',
+      category: 'secondary',
+    },
+    {
+      id: 4,
+      confirmation: 'CN-10197',
+      sender: 'Notaría Miraflores',
+      dateSent: '2024-01-12',
+      recipient: 'Carlos Ríos',
+      originatingNotary: 'Notaría Callao Express',
+      status: 'delivered',
+      category: 'incoming',
+    },
   ]);
 
   const handleUploadSuccess = (uploadedFile) => {
     const newDoc = {
       id: documents.length + 1,
-      name: uploadedFile.name,
-      client: 'Pending Assignment',
-      date: new Date().toISOString().split('T')[0],
-      status: 'Pending',
-      size: (uploadedFile.size / (1024 * 1024)).toFixed(2) + ' MB',
-      certifiedBy: localStorage.getItem('userName') || 'Current User',
-      documentType: uploadedFile.certification.originalDocumentType
+      confirmation: `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      sender: localStorage.getItem('userName') || t('documents.currentNotaryFallback'),
+      dateSent: new Date().toISOString().split('T')[0],
+      recipient: uploadedFile.metadata?.recipient || t('documents.recipientPending'),
+      secondaryNotary: t('documents.secondaryPending'),
+      status: 'pending_confirmation',
+      category: 'secondary',
     };
-    setDocuments([newDoc, ...documents]);
+    setDocuments((prev) => [newDoc, ...prev]);
     setShowUpload(false);
   };
 
@@ -35,14 +71,44 @@ const Documents = () => {
   const signatureReminderTitle = isSignaturePending ? t('client.signatureProcessingTitle') : t('client.digitalSignatureNotSetup');
   const signatureReminderDescription = isSignaturePending ? t('client.signatureProcessingDescription') : t('client.someDocsRequire');
   const signatureReminderAction = isSignaturePending ? t('client.trackSignatureRequest') : t('client.setupDigitalSignature');
+  const currentNotaryName = localStorage.getItem('userName') || t('documents.currentNotaryFallback');
+  const [filters, setFilters] = useState({ query: '', status: 'all', category: 'all' });
+
+  const orderedDocuments = useMemo(() => {
+    const secondary = documents.filter((doc) => doc.category === 'secondary');
+    const incoming = documents.filter((doc) => doc.category === 'incoming');
+    return [...secondary, ...incoming];
+  }, [documents]);
+
+  const filteredDocuments = useMemo(() => {
+    const query = filters.query.trim().toLowerCase();
+    return orderedDocuments.filter((doc) => {
+      const matchesQuery =
+        !query ||
+        [doc.confirmation, doc.sender, doc.recipient, doc.secondaryNotary, doc.originatingNotary]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(query));
+      const matchesStatus = filters.status === 'all' || doc.status === filters.status;
+      const matchesCategory = filters.category === 'all' || doc.category === filters.category;
+      return matchesQuery && matchesStatus && matchesCategory;
+    });
+  }, [orderedDocuments, filters]);
+
+  const sentToSecondaryCount = documents.filter((doc) => doc.category === 'secondary').length;
+  const receivedFromOriginCount = documents.filter((doc) => doc.category === 'incoming').length;
+  const pendingConfirmationCount = documents.filter((doc) => doc.status === 'pending_confirmation').length;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('nav.documents')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {userRole === 'client' ? t('nav.myDocuments') : t('nav.documents')}
+          </h1>
           <p className="text-sm text-gray-600 mt-1">
-            {userRole === 'notary' ? 'Upload and certify PDF documents' : 'View your certified documents'}
+            {userRole === 'notary'
+              ? t('documents.subtitleNotary', { name: currentNotaryName })
+              : t('documents.subtitleClient')}
           </p>
         </div>
       {showSignatureReminder && (
@@ -136,7 +202,7 @@ const Documents = () => {
             <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p className="text-sm text-gray-500">{t('client.totalDocuments')}</p>
+            <p className="text-sm text-gray-500">{t('documents.totalDocumentsLabel')}</p>
           </div>
           <h3 className="text-3xl font-bold text-gray-900">{documents.length}</h3>
         </div>
@@ -145,27 +211,27 @@ const Documents = () => {
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-gray-500">{t('statuses.verified')}</p>
+            <p className="text-sm text-gray-500">{t('documents.sentToSecondaryLabel')}</p>
           </div>
-          <h3 className="text-3xl font-bold text-green-600">{documents.filter(d => d.status === 'Verified').length}</h3>
-        </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-yellow-500">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-sm text-gray-500">{t('dashboard.pendingReviews')}</p>
-          </div>
-          <h3 className="text-3xl font-bold text-yellow-600">{documents.filter(d => d.status === 'Pending').length}</h3>
+          <h3 className="text-3xl font-bold text-green-600">{sentToSecondaryCount}</h3>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-purple-500">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <p className="text-sm text-gray-500">{t('dashboard.successRate')}</p>
+            <p className="text-sm text-gray-500">{t('documents.receivedFromOriginLabel')}</p>
           </div>
-          <h3 className="text-3xl font-bold text-purple-600">28</h3>
+          <h3 className="text-3xl font-bold text-purple-600">{receivedFromOriginCount}</h3>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-yellow-500">
+          <div className="flex items-center gap-2 mb-2">
+            <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-gray-500">{t('documents.pendingConfirmationLabel')}</p>
+          </div>
+          <h3 className="text-3xl font-bold text-yellow-600">{pendingConfirmationCount}</h3>
         </div>
       </div>
 
@@ -174,16 +240,47 @@ const Documents = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">{t('documents.documentList') || 'Document List'}</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap justify-end">
               <input
                 type="text"
                 placeholder={t('documents.searchDocuments')}
+                value={filters.query}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    query: e.target.value,
+                  }))
+                }
                 className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
-              <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                <option value="all">{t('documents.allStatuses')}</option>
-                <option value="verified">{t('statuses.verified')}</option>
-                <option value="pending">{t('statuses.pending')}</option>
+              <select
+                value={filters.status}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }))
+                }
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="all">{t('documents.filterStatusAll')}</option>
+                <option value="delivered">{t('documents.status.delivered')}</option>
+                <option value="pending_confirmation">{t('documents.status.pending_confirmation')}</option>
+                <option value="in_transit">{t('documents.status.in_transit')}</option>
+              </select>
+              <select
+                value={filters.category}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    category: e.target.value,
+                  }))
+                }
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="all">{t('documents.filterCategoryAll')}</option>
+                <option value="secondary">{t('documents.categorySecondary')}</option>
+                <option value="incoming">{t('documents.categoryIncoming')}</option>
               </select>
             </div>
           </div>
@@ -193,85 +290,89 @@ const Documents = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Document Name
+                  {t('documents.confirmationColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                  {t('documents.senderColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Client
+                  {t('documents.dateSentColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Certified By
+                  {t('documents.recipientColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
+                  {t('documents.partnerNotaryColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  {t('documents.statusColumn')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('documents.actionsColumn')}
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {documents.map((doc) => (
-                <tr key={doc.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
-                        doc.status === 'Verified' ? 'bg-green-100' : 'bg-yellow-100'
-                      }`}>
-                        <svg className={`w-6 h-6 ${doc.status === 'Verified' ? 'text-green-600' : 'text-yellow-600'}`} fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                        </svg>
+              {filteredDocuments.map((doc) => {
+                const partner =
+                  doc.category === 'secondary' ? doc.secondaryNotary : doc.originatingNotary;
+                const statusColor =
+                  doc.status === 'delivered'
+                    ? 'bg-green-100 text-green-800'
+                    : doc.status === 'pending_confirmation'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-purple-100 text-purple-800';
+                const badgeColor =
+                  doc.category === 'secondary'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-600';
+
+                return (
+                  <tr key={doc.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-mono text-sm text-gray-900">{doc.confirmation}</div>
+                      <p className="text-xs text-gray-500">{t('documents.confirmationHint')}</p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <p className="text-sm font-semibold text-gray-900">{doc.sender}</p>
+                      <span className={`mt-1 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${badgeColor}`}>
+                        {doc.category === 'secondary'
+                          ? t('documents.categorySecondary')
+                          : t('documents.categoryIncoming')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {doc.dateSent}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {doc.recipient}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {partner || t('documents.partnerNotaryFallback')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-3 py-1 inline-flex items-center gap-1 text-xs font-semibold rounded-full ${statusColor}`}>
+                        {t(`documents.status.${doc.status}`)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <button className="text-blue-600 hover:text-blue-900 transition-colors">
+                          {t('common.view')}
+                        </button>
+                        <button className="text-green-600 hover:text-green-900 transition-colors">
+                          {t('common.download')}
+                        </button>
+                        {(userRole === 'notary' || userRole === 'admin') && (
+                          <button className="text-red-600 hover:text-red-900 transition-colors">
+                            {t('common.delete')}
+                          </button>
+                        )}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{doc.name}</p>
-                        <p className="text-xs text-gray-500">{doc.size}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
-                      {doc.documentType}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {doc.client}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {doc.certifiedBy}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {doc.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-3 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${
-                      doc.status === 'Verified' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {doc.status === 'Verified' && (
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                      {doc.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center gap-2">
-                      <button className="text-blue-600 hover:text-blue-900 transition-colors">{t('common.view')}</button>
-                      <button className="text-green-600 hover:text-green-900 transition-colors">{t('common.download')}</button>
-                      {userRole === 'notary' || userRole === 'admin' && (
-                        <button className="text-red-600 hover:text-red-900 transition-colors">{t('common.delete')}</button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -6,16 +6,20 @@ const LOCAL_KEY = 'systemSetupConfig_v1';
 const defaultConfig = {
   serviceRates: {
     basePrice: 20.0,
-    standardMultiplier: 1.0,
+    maxBasePrice: 60.0,
+    standardSurchargePct: 0,
     fastSurchargePct: 50,
     urgentSurchargePct: 80,
     digitalCertFee: 5.0,
+    serviceFeePct: 12,
+    revenueSharePct: 35,
   },
   deliveryWindows: {
     defaultStart: '09:00',
     defaultEnd: '18:00',
     sameDayCutoff: '14:00',
     allowWeekend: false,
+    maxSecondaryDistanceKm: 15,
   },
   notifications: {
     emailSubject: 'Your notarized document is ready',
@@ -37,7 +41,23 @@ const SystemSetup = () => {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LOCAL_KEY);
-      if (raw) setConfig(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setConfig({
+          serviceRates: {
+            ...defaultConfig.serviceRates,
+            ...(parsed.serviceRates || {}),
+          },
+          deliveryWindows: {
+            ...defaultConfig.deliveryWindows,
+            ...(parsed.deliveryWindows || {}),
+          },
+          notifications: {
+            ...defaultConfig.notifications,
+            ...(parsed.notifications || {}),
+          },
+        });
+      }
     } catch (e) {
       // ignore and fall back to defaults
     }
@@ -82,7 +102,7 @@ const SystemSetup = () => {
         <p className="text-sm text-gray-600 mb-4">{t('admin.parameters.serviceRatesDescription')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-600">Base price (S/.)</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.basePriceLabel')}</label>
             <input
               type="number"
               value={config.serviceRates.basePrice}
@@ -91,16 +111,25 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Digital certification fee (S/.)</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.maxBasePriceLabel')}</label>
             <input
               type="number"
-              value={config.serviceRates.digitalCertFee}
-              onChange={(e) => update('serviceRates.digitalCertFee', parseFloat(e.target.value || 0))}
+              value={config.serviceRates.maxBasePrice}
+              onChange={(e) => update('serviceRates.maxBasePrice', parseFloat(e.target.value || 0))}
               className="mt-1 w-full rounded-lg border px-3 py-2"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Fast surcharge (%)</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.standardSurchargeLabel')}</label>
+            <input
+              type="number"
+              value={config.serviceRates.standardSurchargePct}
+              onChange={(e) => update('serviceRates.standardSurchargePct', parseFloat(e.target.value || 0))}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.fastSurchargeLabel')}</label>
             <input
               type="number"
               value={config.serviceRates.fastSurchargePct}
@@ -109,11 +138,38 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Urgent surcharge (%)</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.urgentSurchargeLabel')}</label>
             <input
               type="number"
               value={config.serviceRates.urgentSurchargePct}
               onChange={(e) => update('serviceRates.urgentSurchargePct', parseInt(e.target.value || 0))}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.digitalCertFeeLabel')}</label>
+            <input
+              type="number"
+              value={config.serviceRates.digitalCertFee}
+              onChange={(e) => update('serviceRates.digitalCertFee', parseFloat(e.target.value || 0))}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.serviceFeeLabel')}</label>
+            <input
+              type="number"
+              value={config.serviceRates.serviceFeePct}
+              onChange={(e) => update('serviceRates.serviceFeePct', parseFloat(e.target.value || 0))}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.revenueShareLabel')}</label>
+            <input
+              type="number"
+              value={config.serviceRates.revenueSharePct}
+              onChange={(e) => update('serviceRates.revenueSharePct', parseFloat(e.target.value || 0))}
               className="mt-1 w-full rounded-lg border px-3 py-2"
             />
           </div>
@@ -123,7 +179,7 @@ const SystemSetup = () => {
             onClick={() => saveSection('Service rates')}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
-            Save rates
+            {t('admin.parameters.saveRates')}
           </button>
         </div>
       </div>
@@ -134,7 +190,7 @@ const SystemSetup = () => {
         <p className="text-sm text-gray-600 mb-4">{t('admin.parameters.deliveryWindowsDescription')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm text-gray-600">Default start</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.defaultStartLabel')}</label>
             <input
               type="time"
               value={config.deliveryWindows.defaultStart}
@@ -143,7 +199,7 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Default end</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.defaultEndLabel')}</label>
             <input
               type="time"
               value={config.deliveryWindows.defaultEnd}
@@ -152,11 +208,20 @@ const SystemSetup = () => {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600">Same-day cutoff</label>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.sameDayCutoffLabel')}</label>
             <input
               type="time"
               value={config.deliveryWindows.sameDayCutoff}
               onChange={(e) => update('deliveryWindows.sameDayCutoff', e.target.value)}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.maxSecondaryDistanceLabel')}</label>
+            <input
+              type="number"
+              value={config.deliveryWindows.maxSecondaryDistanceKm}
+              onChange={(e) => update('deliveryWindows.maxSecondaryDistanceKm', parseFloat(e.target.value || 0))}
               className="mt-1 w-full rounded-lg border px-3 py-2"
             />
           </div>
@@ -167,7 +232,7 @@ const SystemSetup = () => {
                 checked={config.deliveryWindows.allowWeekend}
                 onChange={(e) => update('deliveryWindows.allowWeekend', e.target.checked)}
               />
-              <span className="text-sm text-gray-600">Allow weekend deliveries</span>
+              <span className="text-sm text-gray-600">{t('admin.parameters.allowWeekendLabel')}</span>
             </label>
           </div>
         </div>
@@ -176,7 +241,7 @@ const SystemSetup = () => {
             onClick={() => saveSection('Delivery windows')}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
-            Save windows
+            {t('admin.parameters.saveWindows')}
           </button>
         </div>
       </div>
@@ -245,7 +310,7 @@ const SystemSetup = () => {
             onClick={() => saveSection('Notifications')}
             className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
           >
-            Save notifications
+            {t('admin.parameters.saveNotifications')}
           </button>
         </div>
       </div>

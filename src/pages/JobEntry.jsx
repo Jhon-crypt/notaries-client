@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import ServiceZoneMap from '../components/maps/ServiceZoneMap';
 
 const MAP_PREVIEWS = {
   limaCentro:
@@ -10,9 +9,37 @@ const MAP_PREVIEWS = {
   surco:
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNDAnIGhlaWdodD0nMTYwJyB2aWV3Qm94PScwIDAgMjQwIDE2MCc+PHJlY3QgZmlsbD0nI0RDRkNFNycgd2lkdGg9JzI0MCcgaGVpZ2h0PScxNjAnLz48cGF0aCBkPSdNMjUgMzVMNzAgNjVMMTIwIDU1TDE5MCA3MCcgc3Ryb2tlPScjMjJDNTVFJyBzdHJva2Utd2lkdGg9JzUnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxwYXRoIGQ9J00zNSAxNDBMMTIwIDEwMEwyMDAgMTMwJyBzdHJva2U9JyMxNTgwM0QnIHN0cm9rZS13aWR0aD0nNCcgZmlsbD0nbm9uZScgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJy8+PHBvbHlnb24gcG9pbnRzPSc5MCw0NSAxNTAsNjUgMTYwLDEwNSAxMTAsMTIwIDcwLDk1JyBmaWxsPScjODZFRkFDJyBmaWxsLW9wYWNpdHk9JzAuNicgc3Ryb2tlPScjMjJDNTVFJyBzdHJva2Utd2lkdGg9JzMnLz48Y2lyY2xlIGN4PSc3MCcgY3k9Jzk1JyByPSc5JyBmaWxsPScjMDQ3ODU3Jy8+PC9zdmc+',
 };
+const DEFAULT_PRICING = {
+  baseCharge: 35,
+  fastSurchargePct: 50,
+  urgentSurchargePct: 80,
+  digitalCertFee: 5,
+};
+
 const JobEntry = () => {
   const { t } = useLanguage();
-  
+
+  const [notaryProfile, setNotaryProfile] = useState(null);
+  const [serviceZones, setServiceZones] = useState([]);
+  const [pricing, setPricing] = useState(DEFAULT_PRICING);
+  const [workingHours, setWorkingHours] = useState({
+    start: '09:00',
+    end: '18:00',
+    cutoff: '16:00',
+    weekend: false,
+  });
+  const [secondaryFilters, setSecondaryFilters] = useState({
+    query: '',
+    maxDistance: 15,
+    maxWorkload: 0.85,
+  });
+  const [confirmationNumber, setConfirmationNumber] = useState('');
+
+  const isMobile = useMemo(
+    () => (typeof navigator !== 'undefined' ? /Mobi|Android/i.test(navigator.userAgent) : false),
+    []
+  );
+
   const [sender, setSender] = useState({
     dni: '',
     cellPhone: '',
@@ -34,7 +61,8 @@ const JobEntry = () => {
       leaveAtDoor: false,
       agent: '',
       pdfFile: null,
-      cost: 0,
+      outsideServiceArea: false,
+      cost: '0.00',
     },
   ]);
 
@@ -48,6 +76,8 @@ const JobEntry = () => {
         responseTime: '45 min',
         availability: 'Turno mañana y tarde',
         mapImage: MAP_PREVIEWS.limaCentro,
+        distanceKm: 1.2,
+        workload: 0.42,
       },
       {
         id: 'notary-callao',
@@ -57,6 +87,8 @@ const JobEntry = () => {
         responseTime: '60 min',
         availability: 'Cobertura 24/7 para urgencias',
         mapImage: MAP_PREVIEWS.callao,
+        distanceKm: 4.8,
+        workload: 0.67,
       },
       {
         id: 'notary-surco',
@@ -66,15 +98,124 @@ const JobEntry = () => {
         responseTime: '90 min',
         availability: 'Rondas vespertinas y nocturnas',
         mapImage: MAP_PREVIEWS.surco,
+        distanceKm: 6.3,
+        workload: 0.52,
       },
     ],
     []
   );
 
-  const [primaryNotary, setPrimaryNotary] = useState(notaryOptions[0]?.id || '');
-  const [secondaryNotary, setSecondaryNotary] = useState(notaryOptions[1]?.id || notaryOptions[0]?.id || '');
+  const filteredSecondaryNotaries = useMemo(() => {
+    const text = secondaryFilters.query.trim().toLowerCase();
+    return notaryOptions
+      .filter((notary) => notary.distanceKm <= secondaryFilters.maxDistance)
+      .filter((notary) => notary.workload <= secondaryFilters.maxWorkload)
+      .filter((notary) => {
+        if (!text) return true;
+        return (
+          notary.name.toLowerCase().includes(text) ||
+          notary.zone.toLowerCase().includes(text) ||
+          notary.coverageAreas.toLowerCase().includes(text)
+        );
+      })
+      .sort((a, b) => {
+        if (a.distanceKm !== b.distanceKm) {
+          return a.distanceKm - b.distanceKm;
+        }
+        return a.workload - b.workload;
+      });
+  }, [notaryOptions, secondaryFilters]);
+
+  const secondaryNotaryDetails = useMemo(
+    () => notaryOptions.find((notary) => notary.id === secondaryNotary) || null,
+    [notaryOptions, secondaryNotary]
+  );
+
+  const [secondaryNotary, setSecondaryNotary] = useState('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCertificationModal, setShowCertificationModal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const profileRaw = localStorage.getItem('notaryProfile');
+      if (profileRaw) {
+        const parsed = JSON.parse(profileRaw);
+        setNotaryProfile(parsed);
+
+        setSender((prev) => ({
+          ...prev,
+          cellPhone: parsed.phone || prev.cellPhone,
+          email: parsed.email || prev.email,
+          address: parsed.address
+            ? [
+                parsed.address.street,
+                parsed.address.number,
+                parsed.address.district,
+                parsed.address.province,
+              ]
+                .filter(Boolean)
+                .join(', ')
+            : prev.address,
+        }));
+
+        setPricing((prev) => ({
+          ...prev,
+          baseCharge: parsed.baseCharge ? parseFloat(parsed.baseCharge) || prev.baseCharge : prev.baseCharge,
+        }));
+
+        setWorkingHours({
+          start: parsed.workingHoursStart || '09:00',
+          end: parsed.workingHoursEnd || '18:00',
+          cutoff: parsed.sameDayCutoff || '16:00',
+          weekend: Boolean(parsed.weekendDeliveries),
+        });
+      }
+    } catch (error) {
+      console.warn('Unable to load notary profile', error);
+    }
+
+    try {
+      const zonesRaw = localStorage.getItem('notaryServiceZones');
+      if (zonesRaw) {
+        const parsedZones = JSON.parse(zonesRaw || '[]');
+        if (Array.isArray(parsedZones)) {
+          setServiceZones(parsedZones);
+        }
+      }
+    } catch (error) {
+      console.warn('Unable to load notary service zones', error);
+    }
+
+    try {
+      const setupRaw = localStorage.getItem('systemSetupConfig_v1');
+      if (setupRaw) {
+        const parsed = JSON.parse(setupRaw);
+        const serviceRates = parsed?.serviceRates || {};
+        setPricing((prev) => ({
+          ...prev,
+          baseCharge:
+            prev.baseCharge === DEFAULT_PRICING.baseCharge && serviceRates.basePrice
+              ? parseFloat(serviceRates.basePrice) || prev.baseCharge
+              : prev.baseCharge,
+          fastSurchargePct:
+            serviceRates.fastSurchargePct ?? prev.fastSurchargePct,
+          urgentSurchargePct:
+            serviceRates.urgentSurchargePct ?? prev.urgentSurchargePct,
+          digitalCertFee:
+            serviceRates.digitalCertFee ?? prev.digitalCertFee,
+        }));
+
+        if (parsed?.deliveryWindows?.maxSecondaryDistanceKm) {
+          setSecondaryFilters((prev) => ({
+            ...prev,
+            maxDistance: parsed.deliveryWindows.maxSecondaryDistanceKm,
+          }));
+        }
+      }
+    } catch (error) {
+      console.warn('Unable to load system setup config', error);
+    }
+  }, []);
 
   const handleSenderChange = (e) => {
     setSender({
@@ -83,10 +224,49 @@ const JobEntry = () => {
     });
   };
 
+  const recalculateCost = useCallback(
+    (recipient) => {
+      const base = parseFloat(pricing.baseCharge) || DEFAULT_PRICING.baseCharge;
+      const method = recipient.deliveryMethod || 'standard';
+      let multiplier = 1;
+
+      if (method === 'fast') {
+        multiplier += (pricing.fastSurchargePct || 0) / 100;
+      } else if (method === 'urgent') {
+        multiplier += (pricing.urgentSurchargePct || 0) / 100;
+      }
+
+      if (recipient.outsideServiceArea) {
+        multiplier += 0.25;
+      }
+
+      const total = base * multiplier;
+      return {
+        ...recipient,
+        cost: total ? total.toFixed(2) : '0.00',
+      };
+    },
+    [pricing]
+  );
+
   const handleRecipientChange = (id, field, value) => {
-    setRecipients(recipients.map(r => 
-      r.id === id ? { ...r, [field]: value } : r
-    ));
+    setRecipients((prev) =>
+      prev.map((recipient) => {
+        if (recipient.id !== id) return recipient;
+
+        const nextValue =
+          field === 'leaveAtDoor' || field === 'outsideServiceArea'
+            ? Boolean(value)
+            : value;
+
+        const updated = {
+          ...recipient,
+          [field]: nextValue,
+        };
+
+        return recalculateCost(updated);
+      })
+    );
   };
 
   const handleFileUpload = (id, file) => {
@@ -101,65 +281,83 @@ const JobEntry = () => {
 
   const addRecipient = () => {
     const newId = Math.max(...recipients.map(r => r.id)) + 1;
-    setRecipients([
-      ...recipients,
-      {
-        id: newId,
-        name: '',
-        street: '',
-        mznaLoteUrb: '',
-        district: '',
-        province: '',
-        department: '',
-        deliveryMethod: '',
-        pickupMethod: '',
-        leaveAtDoor: false,
-        agent: '',
-        pdfFile: null,
-        cost: 0,
-      },
-    ]);
+    const blankRecipient = recalculateCost({
+      id: newId,
+      name: '',
+      street: '',
+      mznaLoteUrb: '',
+      district: '',
+      province: '',
+      department: '',
+      deliveryMethod: '',
+      pickupMethod: '',
+      leaveAtDoor: false,
+      agent: '',
+      pdfFile: null,
+      outsideServiceArea: false,
+      cost: '0.00',
+    });
+    setRecipients((prev) => [...prev, blankRecipient]);
   };
 
   const removeRecipient = (id) => {
     if (recipients.length > 1) {
-      setRecipients(recipients.filter(r => r.id !== id));
+      setRecipients((prev) => prev.filter(r => r.id !== id));
     }
   };
+
+  const requiresSecondary = useMemo(
+    () => recipients.some((recipient) => recipient.outsideServiceArea),
+    [recipients]
+  );
 
   const calculateTotal = () => {
     return recipients.reduce((sum, r) => sum + (parseFloat(r.cost) || 0), 0).toFixed(2);
   };
 
+  useEffect(() => {
+    setRecipients((prev) => prev.map((recipient) => recalculateCost(recipient)));
+  }, [recalculateCost]);
+
+  useEffect(() => {
+    if (requiresSecondary) {
+      if (!secondaryNotary && filteredSecondaryNotaries.length) {
+        setSecondaryNotary(filteredSecondaryNotaries[0].id);
+      }
+    } else if (secondaryNotary) {
+      setSecondaryNotary('');
+    }
+  }, [requiresSecondary, filteredSecondaryNotaries, secondaryNotary]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Job Entry Data:', { sender, recipients, primaryNotary, secondaryNotary });
+    if (requiresSecondary && !secondaryNotary) {
+      alert(t('jobEntry.secondaryRequiredAlert'));
+      return;
+    }
+    console.log('Job Entry Data:', {
+      sender,
+      recipients,
+      primaryNotary: notaryProfile?.fullName || 'Notario principal',
+      secondaryNotary,
+    });
     setShowPaymentModal(true);
   };
 
-  const handlePrimarySelect = (id) => {
-    setPrimaryNotary(id);
-    if (id === secondaryNotary) {
-      const fallback = notaryOptions.find((option) => option.id !== id)?.id || id;
-      setSecondaryNotary(fallback);
-    }
-  };
-
   const handleSecondarySelect = (id) => {
-    if (id === primaryNotary) {
-      alert(t('jobEntry.secondaryMustDiffer'));
-      return;
-    }
     setSecondaryNotary(id);
   };
 
   const handleConfirmPayment = () => {
     setShowPaymentModal(false);
+    const generated = `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    setConfirmationNumber(generated);
     setShowCertificationModal(true);
   };
 
   const handleCloseCertification = () => {
     setShowCertificationModal(false);
+    setConfirmationNumber('');
   };
 
   return (
@@ -175,6 +373,9 @@ const JobEntry = () => {
         {/* Sender Information */}
         <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-4 sm:p-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase">{t('jobEntry.sender')}</h2>
+          {notaryProfile && (
+            <p className="text-xs text-gray-500 mb-4">{t('jobEntry.senderAutoFilled')}</p>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -378,6 +579,31 @@ const JobEntry = () => {
                     ))}
                   </tr>
 
+                  {/* Service Area Status */}
+                  <tr>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">
+                      {t('jobEntry.serviceAreaStatus')}
+                    </td>
+                    {recipients.map(recipient => (
+                      <td key={`zone-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
+                        <select
+                          value={recipient.outsideServiceArea ? 'outside' : 'inside'}
+                          onChange={(e) =>
+                            handleRecipientChange(
+                              recipient.id,
+                              'outsideServiceArea',
+                              e.target.value === 'outside'
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-white font-semibold"
+                        >
+                          <option value="inside">{t('jobEntry.insideServiceArea')}</option>
+                          <option value="outside">{t('jobEntry.outsideServiceArea')}</option>
+                        </select>
+                      </td>
+                    ))}
+                  </tr>
+
                   {/* Delivery Method - STANDARD/RÁPIDO/URGENTE */}
                   <tr>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.deliveryMethod')}</td>
@@ -477,6 +703,9 @@ const JobEntry = () => {
                           {recipient.pdfFile && (
                             <p className="text-xs text-green-600 truncate">✓ {recipient.pdfFile.name}</p>
                           )}
+                          {!isMobile && (
+                            <p className="text-xs text-gray-500">{t('jobEntry.desktopUploadHint')}</p>
+                          )}
                         </div>
                       </td>
                     ))}
@@ -487,14 +716,9 @@ const JobEntry = () => {
                     <td className="px-4 py-3 text-sm font-bold text-gray-900 bg-gray-50 border-r-2 border-gray-300">{t('jobEntry.cost')}</td>
                     {recipients.map(recipient => (
                       <td key={`cost-${recipient.id}`} className="px-4 py-3 border-r-2 border-gray-300">
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={recipient.cost}
-                          onChange={(e) => handleRecipientChange(recipient.id, 'cost', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
-                          placeholder="0.00"
-                        />
+                        <div className="text-sm font-semibold text-gray-900">
+                          S/. {parseFloat(recipient.cost || 0).toFixed(2)}
+                        </div>
                       </td>
                     ))}
                   </tr>
@@ -533,29 +757,56 @@ const JobEntry = () => {
             </button>
           </div>
 
-          {/* Map - Service Zones */}
+          {/* Coverage Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:sticky sm:top-6">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4">{t('jobEntry.serviceZones') || 'Zonas de Servicio'}</h3>
-              <div className="h-64 sm:h-80 lg:h-96 bg-gray-100 rounded-lg overflow-hidden">
-                <ServiceZoneMap
-                  value=""
-                  onChange={() => {}}
-                />
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5 sm:sticky sm:top-6 space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900">
+                    {t('jobEntry.coverageSummaryTitle')}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {t('jobEntry.coverageSummarySubtitle')}
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                  S/. {parseFloat(pricing.baseCharge || DEFAULT_PRICING.baseCharge).toFixed(2)}
+                </span>
               </div>
-              <div className="mt-4 space-y-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span>Radio de Autonomía</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span>Agente más Cercano Fuera de Red</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span>Agente más Cercano En Red</span>
-                </div>
+
+              <div className="space-y-2 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold text-gray-900">{t('jobEntry.coverageWorkingHoursLabel')}:</span>{' '}
+                  {t('jobEntry.coverageWorkingHoursValue', { start: workingHours.start, end: workingHours.end })}
+                </p>
+                <p>
+                  <span className="font-semibold text-gray-900">{t('jobEntry.cutoffLabel')}:</span>{' '}
+                  {t('jobEntry.cutoffValue', { cutoff: workingHours.cutoff })}
+                </p>
+                <p className={`flex items-center gap-2 ${workingHours.weekend ? 'text-green-600' : 'text-gray-600'}`}>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {workingHours.weekend ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    )}
+                  </svg>
+                  {workingHours.weekend ? t('jobEntry.weekendAllowed') : t('jobEntry.weekendNotAllowed')}
+                </p>
+              </div>
+
+              <div className="border-t border-dashed border-gray-200 pt-3 text-xs text-gray-600 space-y-2">
+                <p>
+                  {serviceZones.length
+                    ? t('jobEntry.serviceZonesDefined', { count: serviceZones.length })
+                    : t('jobEntry.serviceZonesMissing')}
+                </p>
+                <p>
+                  {t('jobEntry.pricingHint', {
+                    fast: pricing.fastSurchargePct,
+                    urgent: pricing.urgentSurchargePct,
+                  })}
+                </p>
               </div>
             </div>
           </div>
@@ -568,116 +819,149 @@ const JobEntry = () => {
               <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('jobEntry.assignedNotariesTitle')}</h2>
               <p className="text-sm text-gray-600 mt-1">{t('jobEntry.assignedNotariesSubtitle')}</p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 uppercase">
-                {t('jobEntry.primaryLabel')}
-              </span>
-              <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 uppercase">
-                {t('jobEntry.secondaryLabel')}
-              </span>
-            </div>
+            <span
+              className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                requiresSecondary ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              {requiresSecondary ? t('jobEntry.secondaryRequiredBadge') : t('jobEntry.secondaryOptionalBadge')}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-            {notaryOptions.map((notary) => {
-              const isPrimary = primaryNotary === notary.id;
-              const isSecondary = secondaryNotary === notary.id;
-              return (
-                <div
-                  key={notary.id}
-                  className={`border-2 rounded-xl p-4 sm:p-5 transition shadow-sm ${
-                    isPrimary
-                      ? 'border-green-500 shadow-lg'
-                      : isSecondary
-                        ? 'border-blue-400 shadow-md'
-                        : 'border-gray-200'
-                  }`}
+            <div className="border-2 border-green-100 rounded-xl p-4 space-y-3 bg-green-50/40">
+              <h3 className="text-xs font-semibold uppercase text-green-700">{t('jobEntry.primaryLabel')}</h3>
+              <p className="text-lg font-bold text-gray-900">
+                {notaryProfile?.fullName || t('jobEntry.currentNotaryFallback')}
+              </p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>{t('jobEntry.primaryContactLine', { phone: notaryProfile?.phone || '—' })}</p>
+                <p>{t('jobEntry.primaryEmailLine', { email: notaryProfile?.email || '—' })}</p>
+                <p>
+                  {t('jobEntry.primaryBaseChargeLine', {
+                    amount: parseFloat(pricing.baseCharge || DEFAULT_PRICING.baseCharge).toFixed(2),
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="border-2 border-blue-100 rounded-xl p-4 space-y-4 bg-blue-50/40">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-900">
+                  {t('jobEntry.secondarySelectLabel')}
+                </label>
+                <select
+                  value={secondaryNotary}
+                  onChange={(e) => handleSecondarySelect(e.target.value)}
+                  disabled={!requiresSecondary || !filteredSecondaryNotaries.length}
+                  className="w-full px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                 >
-                  <img
-                    src={notary.mapImage}
-                    alt={`Mapa de cobertura de ${notary.name}`}
-                    className="w-full h-36 sm:h-40 object-cover rounded-lg mb-4 border border-gray-200"
-                  />
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{notary.name}</h3>
-                      <p className="text-sm text-gray-500">{t('jobEntry.zoneLabel', { zone: notary.zone })}</p>
-                    </div>
-                    <div className="space-y-1 text-right">
-                      {isPrimary && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {t('jobEntry.selectedPrimary')}
-                        </span>
-                      )}
-                      {isSecondary && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {t('jobEntry.selectedSecondary')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  {!requiresSecondary && <option value="">{t('jobEntry.secondaryDisabledOption')}</option>}
+                  {filteredSecondaryNotaries.map((notary) => (
+                    <option key={notary.id} value={notary.id}>
+                      {t('jobEntry.secondaryOptionLabel', {
+                        name: notary.name,
+                        distance: notary.distanceKm.toFixed(1),
+                        workload: Math.round(notary.workload * 100),
+                      })}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500">
+                  {requiresSecondary
+                    ? filteredSecondaryNotaries.length
+                      ? t('jobEntry.secondarySelectionHelp')
+                      : t('jobEntry.secondaryNoResults')
+                    : t('jobEntry.secondaryDisabledHint')}
+                </p>
+              </div>
 
-                  <div className="mt-4 space-y-2 text-sm text-gray-600">
-                    <p className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.242a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      {t('jobEntry.coverageAreas', { areas: notary.coverageAreas })}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {t('jobEntry.responseTime', { response: notary.responseTime })}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0-.552.895-1 2-1s2 .448 2 1-.895 1-2 1-2 .448-2 1 .895 1 2 1 2-.448 2-1" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z" />
-                      </svg>
-                      {t('jobEntry.availability', { availability: notary.availability })}
-                    </p>
-                  </div>
-
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handlePrimarySelect(notary.id)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition shadow-sm ${
-                        isPrimary
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-green-50 text-green-700 hover:bg-green-100'
-                      }`}
-                    >
-                      {isPrimary ? t('jobEntry.selectedPrimary') : t('jobEntry.selectAsPrimary')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSecondarySelect(notary.id)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition shadow-sm ${
-                        isSecondary
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-                      }`}
-                    >
-                      {isSecondary ? t('jobEntry.selectedSecondary') : t('jobEntry.selectAsSecondary')}
-                    </button>
-                  </div>
+              <div className="border border-dashed border-blue-200 rounded-lg p-3 space-y-3">
+                <input
+                  type="search"
+                  value={secondaryFilters.query}
+                  onChange={(e) =>
+                    setSecondaryFilters((prev) => ({
+                      ...prev,
+                      query: e.target.value,
+                    }))
+                  }
+                  placeholder={t('jobEntry.secondarySearchPlaceholder')}
+                  className="w-full rounded-lg border border-blue-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600">
+                  <label className="flex flex-col gap-1">
+                    <span className="font-semibold">
+                      {t('jobEntry.maxDistanceLabel', { value: secondaryFilters.maxDistance })}
+                    </span>
+                    <input
+                      type="range"
+                      min="1"
+                      max="25"
+                      value={secondaryFilters.maxDistance}
+                      onChange={(e) =>
+                        setSecondaryFilters((prev) => ({
+                          ...prev,
+                          maxDistance: Number(e.target.value),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className="flex flex-col gap-1">
+                    <span className="font-semibold">
+                      {t('jobEntry.maxWorkloadLabel', { value: Math.round(secondaryFilters.maxWorkload * 100) })}
+                    </span>
+                    <input
+                      type="range"
+                      min="30"
+                      max="100"
+                      value={Math.round(secondaryFilters.maxWorkload * 100)}
+                      onChange={(e) =>
+                        setSecondaryFilters((prev) => ({
+                          ...prev,
+                          maxWorkload: Number(e.target.value) / 100,
+                        }))
+                      }
+                    />
+                  </label>
                 </div>
-              );
-            })}
-          </div>
+              </div>
 
-          <p className="text-xs text-gray-500">
-            {t('jobEntry.notarySelectionNote')}
-          </p>
+              <div className="space-y-3">
+                {filteredSecondaryNotaries.map((notary) => (
+                  <button
+                    type="button"
+                    key={notary.id}
+                    onClick={() => handleSecondarySelect(notary.id)}
+                    disabled={!requiresSecondary}
+                    className={`w-full text-left border-2 rounded-lg p-3 transition ${
+                      secondaryNotary === notary.id
+                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{notary.name}</p>
+                        <p className="text-xs text-gray-500">{notary.coverageAreas}</p>
+                      </div>
+                      <div className="text-xs font-semibold text-blue-600 text-right">
+                        {notary.distanceKm.toFixed(1)} km • {Math.round(notary.workload * 100)}%
+                      </div>
+                    </div>
+                    <img
+                      src={notary.mapImage}
+                      alt={t('jobEntry.secondaryMapAlt', { name: notary.name })}
+                      className="w-full h-28 object-cover rounded-lg mt-3 border border-blue-100"
+                    />
+                  </button>
+                ))}
+                {!filteredSecondaryNotaries.length && (
+                  <p className="text-xs text-gray-500">{t('jobEntry.secondaryNoResults')}</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Total and Payment */}
@@ -718,13 +1002,17 @@ const JobEntry = () => {
               <div className="flex items-center justify-between text-sm text-gray-600">
                 <span className="font-medium text-gray-700 uppercase">{t('jobEntry.primaryLabel')}</span>
                 <span className="font-semibold text-gray-900">
-                  {notaryOptions.find((option) => option.id === primaryNotary)?.name}
+                  {notaryProfile?.fullName || t('jobEntry.currentNotaryFallback')}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-600">
                 <span className="font-medium text-gray-700 uppercase">{t('jobEntry.secondaryLabel')}</span>
                 <span className="font-semibold text-gray-900">
-                  {notaryOptions.find((option) => option.id === secondaryNotary)?.name}
+                  {secondaryNotaryDetails
+                    ? secondaryNotaryDetails.name
+                    : requiresSecondary
+                      ? t('jobEntry.secondaryNotSelected')
+                      : t('jobEntry.secondaryOptionalSummary')}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-3 mt-2 border-t border-dashed border-gray-200">
@@ -732,6 +1020,8 @@ const JobEntry = () => {
                 <span className="text-2xl font-bold text-blue-600">S/. {calculateTotal()}</span>
               </div>
             </div>
+
+            <p className="mt-4 text-xs text-gray-500">{t('jobEntry.posHint')}</p>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
@@ -776,6 +1066,12 @@ const JobEntry = () => {
               </ul>
             </div>
 
+            <p className="mt-4 text-sm text-gray-600">
+              {confirmationNumber
+                ? t('jobEntry.confirmationSent', { confirmation: confirmationNumber })
+                : t('jobEntry.confirmationPending')}
+            </p>
+
             <button
               type="button"
               onClick={handleCloseCertification}
@@ -784,7 +1080,7 @@ const JobEntry = () => {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              {t('jobEntry.certificationClose')}
+              {t('jobEntry.certificationSend')}
             </button>
           </div>
         </div>

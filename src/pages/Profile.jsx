@@ -11,6 +11,11 @@ const DEFAULT_NOTARY = {
   calIssueDate: '2023-01-10',
   calExpiryDate: '2025-01-10',
   maxDailyWorkload: '30',
+  baseCharge: '35.00',
+  workingHoursStart: '09:00',
+  workingHoursEnd: '18:00',
+  sameDayCutoff: '16:00',
+  weekendDeliveries: false,
   notes: '',
   address: {
     street: 'Av. Javier Prado',
@@ -54,7 +59,16 @@ const Profile = () => {
     if (userRole !== 'notary') return DEFAULT_NOTARY;
     try {
       const stored = localStorage.getItem('notaryProfile');
-      return stored ? JSON.parse(stored) : DEFAULT_NOTARY;
+      if (!stored) return DEFAULT_NOTARY;
+      const parsed = JSON.parse(stored);
+      return {
+        ...DEFAULT_NOTARY,
+        ...parsed,
+        address: {
+          ...DEFAULT_NOTARY.address,
+          ...(parsed.address || {}),
+        },
+      };
     } catch {
       return DEFAULT_NOTARY;
     }
@@ -101,7 +115,7 @@ const Profile = () => {
   }, [serviceZones]);
 
   const handleNotaryInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
     if (name.startsWith('address.')) {
       const [, field] = name.split('.');
       setNotaryData((prev) => ({
@@ -110,6 +124,13 @@ const Profile = () => {
           ...prev.address,
           [field]: value,
         },
+      }));
+      return;
+    }
+    if (type === 'checkbox') {
+      setNotaryData((prev) => ({
+        ...prev,
+        [name]: checked,
       }));
       return;
     }
@@ -162,6 +183,10 @@ const Profile = () => {
       'calIssueDate',
       'calExpiryDate',
       'maxDailyWorkload',
+      'baseCharge',
+      'workingHoursStart',
+      'workingHoursEnd',
+      'sameDayCutoff',
       'address.street',
       'address.number',
       'address.district',
@@ -192,7 +217,12 @@ const Profile = () => {
       return;
     }
 
-    localStorage.setItem('notaryProfile', JSON.stringify(notaryData));
+    const payload = {
+      ...notaryData,
+      baseCharge: notaryData.baseCharge?.toString() || '0',
+      weekendDeliveries: Boolean(notaryData.weekendDeliveries),
+    };
+    localStorage.setItem('notaryProfile', JSON.stringify(payload));
     setErrors({});
     setSaveStatus('success');
   };
@@ -617,8 +647,98 @@ const Profile = () => {
             </div>
           </div>
 
-          <ServiceZoneMap onChange={handleServiceZoneChange} />
+          <ServiceZoneMap onChange={handleServiceZoneChange} initialZones={serviceZones} />
           {renderFieldError('serviceZones')}
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">{t('profile.servicePricingTitle')}</h2>
+          <p className="text-sm text-gray-600">{t('profile.servicePricingDescription')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {t('profile.baseChargeLabel')}
+              </label>
+              <input
+                type="number"
+                name="baseCharge"
+                min="0"
+                step="0.5"
+                value={notaryData.baseCharge}
+                onChange={handleNotaryInputChange}
+                className={`mt-1 w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.baseCharge ? 'border-red-400 focus:ring-red-500' : 'border-gray-200'
+                }`}
+              />
+              {renderFieldError('baseCharge')}
+            </div>
+            <div className="sm:col-span-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm text-emerald-800">
+              <p className="font-semibold mb-1">{t('profile.servicePricingHintTitle')}</p>
+              <p>{t('profile.servicePricingHint')}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">{t('profile.workingHoursTitle')}</h2>
+          <p className="text-sm text-gray-600">{t('profile.workingHoursDescription')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {t('profile.workdayStart')}
+              </label>
+              <input
+                type="time"
+                name="workingHoursStart"
+                value={notaryData.workingHoursStart}
+                onChange={handleNotaryInputChange}
+                className={`mt-1 w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.workingHoursStart ? 'border-red-400 focus:ring-red-500' : 'border-gray-200'
+                }`}
+              />
+              {renderFieldError('workingHoursStart')}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {t('profile.workdayEnd')}
+              </label>
+              <input
+                type="time"
+                name="workingHoursEnd"
+                value={notaryData.workingHoursEnd}
+                onChange={handleNotaryInputChange}
+                className={`mt-1 w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.workingHoursEnd ? 'border-red-400 focus:ring-red-500' : 'border-gray-200'
+                }`}
+              />
+              {renderFieldError('workingHoursEnd')}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {t('profile.sameDayCutoff')}
+              </label>
+              <input
+                type="time"
+                name="sameDayCutoff"
+                value={notaryData.sameDayCutoff}
+                onChange={handleNotaryInputChange}
+                className={`mt-1 w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  errors.sameDayCutoff ? 'border-red-400 focus:ring-red-500' : 'border-gray-200'
+                }`}
+              />
+              {renderFieldError('sameDayCutoff')}
+            </div>
+            <label className="flex items-center gap-2 mt-6">
+              <input
+                type="checkbox"
+                name="weekendDeliveries"
+                checked={Boolean(notaryData.weekendDeliveries)}
+                onChange={handleNotaryInputChange}
+                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+              />
+              <span className="text-sm text-gray-700">{t('profile.allowWeekendDeliveries')}</span>
+            </label>
+          </div>
         </div>
 
         <div className="flex justify-end">

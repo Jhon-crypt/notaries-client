@@ -22,11 +22,11 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Admin Welcome Banner */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">{t('admin.administratorDashboard')}</h1>
-            <p className="text-purple-100">{t('admin.manageUsers')}</p>
+            <p className="text-gray-600">{t('admin.manageUsers')}</p>
           </div>
           <div className="flex items-center justify-end gap-4">
             <LanguageToggle compact />
@@ -102,6 +102,23 @@ const AdminDashboard = () => {
           <p className="text-xs text-gray-400 mt-2">3 {t('admin.pendingVerification')}</p>
         </div>
 
+        {/* Coins Pending Conversion */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-amber-100">
+          <div className="flex items-start justify-between mb-2">
+            <div className="p-2 bg-amber-50 rounded-lg">
+              <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6a6 3 0 110 6 6 3 0 010-6z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3c0 1.657-2.686 3-6 3s-6-1.343-6-3V9" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 13v3c0 1.657-2.686 3-6 3s-6-1.343-6-3v-3" />
+              </svg>
+            </div>
+            <span className="text-xs text-amber-600 font-medium">{t('admin.lastUpdated', { time: '15 min' })}</span>
+          </div>
+          <p className="text-sm text-gray-500 mb-1">{t('admin.coinsPendingTitle')}</p>
+          <h3 className="text-3xl font-bold text-gray-900">1,250</h3>
+          <p className="text-xs text-gray-400 mt-2">{t('admin.coinsPendingCaption')}</p>
+        </div>
+
         {/* Documents Processed */}
         <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-blue-100">
           <div className="flex items-start justify-between mb-2">
@@ -115,21 +132,6 @@ const AdminDashboard = () => {
           <p className="text-sm text-gray-500 mb-1">{t('admin.documentsProcessed')}</p>
           <h3 className="text-3xl font-bold text-gray-900">1,847</h3>
           <p className="text-xs text-gray-400 mt-2">{t('admin.totalValidated')}</p>
-        </div>
-
-        {/* System Health */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-emerald-100">
-          <div className="flex items-start justify-between mb-2">
-            <div className="p-2 bg-emerald-50 rounded-lg">
-              <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <span className="text-xs text-emerald-600 font-medium">{t('admin.optimal')}</span>
-          </div>
-          <p className="text-sm text-gray-500 mb-1">{t('admin.systemHealth')}</p>
-          <h3 className="text-3xl font-bold text-gray-900">99.8%</h3>
-          <p className="text-xs text-gray-400 mt-2">{t('admin.uptimeThisMonth')}</p>
         </div>
       </div>
 

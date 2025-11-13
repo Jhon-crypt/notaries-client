@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-const ServiceZoneMap = ({ onChange }) => {
+const ServiceZoneMap = ({ onChange, initialZones }) => {
   const [drawnZones, setDrawnZones] = useState([]);
+  const [initialZonesLoaded, setInitialZonesLoaded] = useState(false);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const drawingManagerRef = useRef(null);
@@ -142,6 +143,76 @@ const ServiceZoneMap = ({ onChange }) => {
       console.warn('Google Maps API not loaded. Please add VITE_GOOGLE_MAPS_API_KEY to your .env file');
     }
   }, [initializeMap]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || initialZonesLoaded) return;
+    if (!initialZones) {
+      setInitialZonesLoaded(true);
+      return;
+    }
+
+    try {
+      const parsed =
+        typeof initialZones === 'string'
+          ? JSON.parse(initialZones || '[]')
+          : Array.isArray(initialZones)
+            ? initialZones
+            : [];
+
+      if (!parsed.length) {
+        setInitialZonesLoaded(true);
+        return;
+      }
+
+      const overlays = parsed
+        .map((zone) => {
+          if (zone.type === 'polygon' && zone.paths?.length) {
+            const polygon = new window.google.maps.Polygon({
+              paths: zone.paths,
+              fillColor: '#22c55e',
+              fillOpacity: 0.35,
+              strokeWeight: 3,
+              strokeColor: '#16a34a',
+              editable: true,
+              draggable: true,
+              zIndex: 1,
+            });
+            polygon.setMap(mapInstanceRef.current);
+            addDeleteButton(polygon);
+            return { type: 'polygon', overlay: polygon };
+          }
+
+          if (zone.type === 'circle' && zone.center && zone.radius) {
+            const circle = new window.google.maps.Circle({
+              center: zone.center,
+              radius: zone.radius,
+              fillColor: '#3B82F6',
+              fillOpacity: 0.35,
+              strokeWeight: 3,
+              strokeColor: '#1E40AF',
+              editable: true,
+              draggable: true,
+              zIndex: 1,
+            });
+            circle.setMap(mapInstanceRef.current);
+            addDeleteButton(circle);
+            return { type: 'circle', overlay: circle };
+          }
+
+          return null;
+        })
+        .filter(Boolean);
+
+      if (overlays.length) {
+        setDrawnZones(overlays);
+        updateZonesData(overlays);
+      }
+    } catch (error) {
+      console.warn('Unable to load existing service zones', error);
+    } finally {
+      setInitialZonesLoaded(true);
+    }
+  }, [initialZones, initialZonesLoaded, addDeleteButton, updateZonesData]);
 
   const clearAllZones = () => {
     if (window.confirm('Clear all service zones?')) {
