@@ -596,6 +596,8 @@ export const es = {
     maxDistanceLabel: 'Distancia máx.: {{value}} km',
     maxWorkloadLabel: 'Carga máx.: {{value}}%',
     secondaryMapAlt: 'Mapa de cobertura de {{name}}',
+    serviceAreaMapHint: 'Mapa de zona de servicio de {{name}}',
+    serviceAreaMapLabel: 'Zona de servicio del notario',
     secondaryNotSelected: 'Sin asignar',
     secondaryOptionalSummary: 'No requerido',
     secondaryRequiredAlert: 'Selecciona un notario secundario para las direcciones fuera de tu zona de servicio.',

@@ -1,56 +1,94 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-// Haversine formula to calculate distance between two coordinates in kilometers
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth's radius in km
+// Utility function to calculate distance between two coordinates using Haversine formula
+const calculateDistance = (lat1, lng1, lat2, lng2) => {
+  const R = 6371; // Earth's radius in kilometers
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
-// Get approximate coordinates for a district in Lima, Peru
-const getDistrictCoordinates = (district) => {
+// Get approximate coordinates for a district/province in Lima, Peru
+const getCoordinatesForAddress = (district) => {
+  // Default coordinates for Lima, Peru
+  const defaultCoords = { lat: -12.0464, lng: -77.0428 };
+  
+  // Simplified coordinate mapping for common districts in Lima
   const districtCoords = {
-    // Lima Centro districts
     'Cercado de Lima': { lat: -12.0464, lng: -77.0428 },
-    'Lince': { lat: -12.0833, lng: -77.0333 },
-    'San Miguel': { lat: -12.0833, lng: -77.1000 },
-    // Callao districts
+    'Lince': { lat: -12.0844, lng: -77.0331 },
+    'San Miguel': { lat: -12.0753, lng: -77.0925 },
     'Callao': { lat: -12.0566, lng: -77.1181 },
-    'Bellavista': { lat: -12.0500, lng: -77.1333 },
-    'La Perla': { lat: -12.0667, lng: -77.1167 },
-    // Surco area districts
-    'Santiago de Surco': { lat: -12.1500, lng: -76.9833 },
-    'Surco': { lat: -12.1500, lng: -76.9833 },
-    'San Borja': { lat: -12.1000, lng: -77.0000 },
-    'Miraflores': { lat: -12.1167, lng: -77.0333 },
-    // Default to Lima Centro if district not found
+    'Bellavista': { lat: -12.0566, lng: -77.1181 },
+    'La Perla': { lat: -12.0566, lng: -77.1181 },
+    'Surco': { lat: -12.1355, lng: -76.9894 },
+    'San Borja': { lat: -12.0931, lng: -77.0075 },
+    'Miraflores': { lat: -12.1194, lng: -77.0303 },
   };
   
-  // Try exact match first
-  if (districtCoords[district]) {
+  // Try to find exact match
+  if (district && districtCoords[district]) {
     return districtCoords[district];
   }
   
-  // Try partial match
-  const districtLower = district.toLowerCase();
-  for (const [key, coords] of Object.entries(districtCoords)) {
-    if (key.toLowerCase().includes(districtLower) || districtLower.includes(key.toLowerCase())) {
-      return coords;
-    }
-  }
-  
-  // Default to Lima Centro
-  return { lat: -12.0464, lng: -77.0428 };
+  // Fallback to default
+  return defaultCoords;
 };
+
+const MAP_PREVIEWS = {
+  limaCentro:
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNDAnIGhlaWdodD0nMTYwJyB2aWV3Qm94PScwIDAgMjQwIDE2MCc+PHJlY3QgZmlsbD0nI0UwRjJGRScgd2lkdGg9JzI0MCcgaGVpZ2h0PScxNjAnLz48cGF0aCBkPSdNMjAgNDBMOTAgNjBMMTIwIDQwTDIwMCA3MCcgc3Ryb2tlPScjMDI4NEM3JyBzdHJva2Utd2lkdGg9JzYnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxwYXRoIGQ9J00zMCAxMjBMMTEwIDkwTDE2MCAxMjBMMjEwIDExMCcgc3Ryb2tlPScjMzhCREY4JyBzdHJva2Utd2lkdGg9JzQnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxjaXJjbGUgY3g9JzEyMCcgY3k9JzYwJyByPScxMCcgZmlsbD0nIzFENEVEOCcvPjxyZWN0IHg9JzE1MCcgeT0nMzAnIHdpZHRoPSc1MCcgaGVpZ2h0PSczMCcgZmlsbD0nI0ZCQkYyNCcgZmlsbC1vcGFjaXR5PScwLjYnIHN0cm9rZT0nI0Y1OUUwQicgc3Ryb2tlLXdpZHRoPSczJy8+PC9zdmc+',
+  callao:
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNDAnIGhlaWdodD0nMTYwJyB2aWV3Qm94PScwIDAgMjQwIDE2MCc+PHJlY3QgZmlsbD0nI0ZFRjNDNycgd2lkdGg9JzI0MCcgaGVpZ2h0PScxNjAnLz48cGF0aCBkPSdNMTUgMzBMODUgNDVMMTQwIDM1TDIyMCA2MCcgc3Ryb2tlPScjRjU5RTBCJyBzdHJva2Utd2lkdGg9JzUnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxwYXRoIGQ9J00yNSAxMzBMOTUgMTEwTDE1MCAxMjVMMjA1IDExNScgc3Ryb2tlPScjRDk3NzA2JyBzdHJva2Utd2lkdGg9JzQnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxwb2x5Z29uIHBvaW50cz0nNjAsNjAgMTIwLDgwIDkwLDEyMCAzNSw5NScgZmlsbD0nI0ZDRDM0RCcgZmlsbC1vcGFjaXR5PScwLjU1JyBzdHJva2U9JyNGNTlFMEInIHN0cm9rZS13aWR0aD0nMycvPjxjaXJjbGUgY3g9JzE4MCcgY3k9JzgwJyByPScxMCcgZmlsbD0nI0I5MUMxQycvPjwvc3ZnPg==',
+  surco:
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNDAnIGhlaWdodD0nMTYwJyB2aWV3Qm94PScwIDAgMjQwIDE2MCc+PHJlY3QgZmlsbD0nI0RDRkNFNycgd2lkdGg9JzI0MCcgaGVpZ2h0PScxNjAnLz48cGF0aCBkPSdNMjUgMzVMNzAgNjVMMTIwIDU1TDE5MCA3MCcgc3Ryb2tlPScjMjJDNTVFJyBzdHJva2Utd2lkdGg9JzUnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSdyb3VuZCcvPjxwYXRoIGQ9J00zNSAxNDBMMTIwIDEwMEwyMDAgMTMwJyBzdHJva2U9JyMxNTgwM0QnIHN0cm9rZS13aWR0aD0nNCcgZmlsbD0nbm9uZScgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJy8+PHBvbHlnb24gcG9pbnRzPSc5MCw0NSAxNTAsNjUgMTYwLDEwNSAxMTAsMTIwIDcwLDk1JyBmaWxsPScjODZFRkFDJyBmaWxsLW9wYWNpdHk9JzAuNicgc3Ryb2tlPScjMjJDNTVFJyBzdHJva2Utd2lkdGg9JzMnLz48Y2lyY2xlIGN4PSc3MCcgY3k9Jzk1JyByPSc5JyBmaWxsPScjMDQ3ODU3Jy8+PC9zdmc+',
+};
+
+// Base notary options with coordinates
+const BASE_NOTARY_OPTIONS = [
+  {
+    id: 'notary-centro',
+    name: 'Notaría Central Lima',
+    zone: 'Lima Centro',
+    coverageAreas: 'Cercado, Lince, San Miguel',
+    responseTime: '45 min',
+    availability: 'Turno mañana y tarde',
+    mapImage: MAP_PREVIEWS.limaCentro,
+    coordinates: { lat: -12.0464, lng: -77.0428 }, // Cercado de Lima
+    workload: 0.42,
+  },
+  {
+    id: 'notary-callao',
+    name: 'Notaría Callao Express',
+    zone: 'Callao y Aeropuerto',
+    coverageAreas: 'Callao, Bellavista, La Perla',
+    responseTime: '60 min',
+    availability: 'Cobertura 24/7 para urgencias',
+    mapImage: MAP_PREVIEWS.callao,
+    coordinates: { lat: -12.0566, lng: -77.1181 }, // Callao
+    workload: 0.67,
+  },
+  {
+    id: 'notary-surco',
+    name: 'Notaría Surco Verde',
+    zone: 'Surco - San Borja',
+    coverageAreas: 'Surco, San Borja, Miraflores',
+    responseTime: '90 min',
+    availability: 'Rondas vespertinas y nocturnas',
+    mapImage: MAP_PREVIEWS.surco,
+    coordinates: { lat: -12.1355, lng: -76.9894 }, // Surco
+    workload: 0.52,
+  },
+];
+
 const DEFAULT_PRICING = {
   baseCharge: 35,
   fastSurchargePct: 50,
@@ -103,71 +141,42 @@ const JobEntry = () => {
     },
   ]);
 
-  const notaryOptions = useMemo(
-    () => [
-      {
-        id: 'notary-centro',
-        name: 'Notaría Central Lima',
-        zone: 'Lima Centro',
-        coverageAreas: 'Cercado, Lince, San Miguel',
-        responseTime: '45 min',
-        availability: 'Turno mañana y tarde',
-        lat: -12.0464,
-        lng: -77.0428,
-        workload: 0.42,
-      },
-      {
-        id: 'notary-callao',
-        name: 'Notaría Callao Express',
-        zone: 'Callao y Aeropuerto',
-        coverageAreas: 'Callao, Bellavista, La Perla',
-        responseTime: '60 min',
-        availability: 'Cobertura 24/7 para urgencias',
-        lat: -12.0566,
-        lng: -77.1181,
-        workload: 0.67,
-      },
-      {
-        id: 'notary-surco',
-        name: 'Notaría Surco Verde',
-        zone: 'Surco - San Borja',
-        coverageAreas: 'Surco, San Borja, Miraflores',
-        responseTime: '90 min',
-        availability: 'Rondas vespertinas y nocturnas',
-        lat: -12.1500,
-        lng: -76.9833,
-        workload: 0.52,
-      },
-    ],
-    []
-  );
+  // Calculate distance from each notary to the recipient(s) outside service area
+  const notaryOptions = useMemo(() => {
+    const recipientsOutside = recipients.filter((r) => r.outsideServiceArea);
+    
+    if (recipientsOutside.length === 0) {
+      // No recipients outside service area, return base options with default distance
+      return BASE_NOTARY_OPTIONS.map((notary) => ({
+        ...notary,
+        distanceKm: 0,
+      }));
+    }
+
+    // Calculate distance from each notary to the first recipient outside service area
+    // (In a full implementation, you might want to calculate for each recipient separately)
+    const targetRecipient = recipientsOutside[0];
+    const recipientCoords = getCoordinatesForAddress(targetRecipient.district);
+
+    return BASE_NOTARY_OPTIONS.map((notary) => {
+      const distanceKm = calculateDistance(
+        notary.coordinates.lat,
+        notary.coordinates.lng,
+        recipientCoords.lat,
+        recipientCoords.lng
+      );
+      return {
+        ...notary,
+        distanceKm,
+      };
+    });
+  }, [recipients]);
 
   const [secondaryNotary, setSecondaryNotary] = useState('');
 
-  // Get the first recipient outside service area for distance calculation
-  const recipientForDistance = useMemo(() => {
-    return recipients.find((r) => r.outsideServiceArea && r.district) || null;
-  }, [recipients]);
-
   const filteredSecondaryNotaries = useMemo(() => {
     const text = secondaryFilters.query.trim().toLowerCase();
-    
-    // Calculate distance from each notary to recipient
-    const notariesWithDistance = notaryOptions.map((notary) => {
-      let distanceKm = Infinity; // Default to large distance if no recipient
-      if (recipientForDistance && recipientForDistance.district) {
-        const recipientCoords = getDistrictCoordinates(recipientForDistance.district);
-        distanceKm = calculateDistance(
-          notary.lat,
-          notary.lng,
-          recipientCoords.lat,
-          recipientCoords.lng
-        );
-      }
-      return { ...notary, distanceKm };
-    });
-    
-    return notariesWithDistance
+    return notaryOptions
       .filter((notary) => notary.distanceKm <= secondaryFilters.maxDistance)
       .filter((notary) => notary.workload <= secondaryFilters.maxWorkload)
       .filter((notary) => {
@@ -184,7 +193,7 @@ const JobEntry = () => {
         }
         return a.workload - b.workload;
       });
-  }, [notaryOptions, secondaryFilters, recipientForDistance]);
+  }, [notaryOptions, secondaryFilters]);
 
   const secondaryNotaryDetails = useMemo(
     () => notaryOptions.find((notary) => notary.id === secondaryNotary) || null,
@@ -1052,7 +1061,7 @@ const JobEntry = () => {
                     <option key={notary.id} value={notary.id}>
                       {t('jobEntry.secondaryOptionLabel', {
                         name: notary.name,
-                        distance: isFinite(notary.distanceKm) ? notary.distanceKm.toFixed(1) : '—',
+                        distance: notary.distanceKm.toFixed(1),
                         workload: Math.round(notary.workload * 100),
                       })}
                     </option>
@@ -1137,8 +1146,19 @@ const JobEntry = () => {
                       <p className="text-xs text-gray-500">{notary.coverageAreas}</p>
                     </div>
                     <div className="text-xs font-semibold text-blue-600 text-right">
-                      {isFinite(notary.distanceKm) ? notary.distanceKm.toFixed(1) : '—'} km • {Math.round(notary.workload * 100)}%
+                      {notary.distanceKm.toFixed(1)} km • {Math.round(notary.workload * 100)}%
                     </div>
+                  </div>
+                  <div className="mt-3 relative">
+                    <img
+                      src={notary.mapImage}
+                      alt={t('jobEntry.secondaryMapAlt', { name: notary.name })}
+                      className="w-full h-28 object-cover rounded-lg border border-blue-100"
+                      title={t('jobEntry.serviceAreaMapHint', { name: notary.name })}
+                    />
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      {t('jobEntry.serviceAreaMapLabel')}
+                    </p>
                   </div>
                 </button>
               ))}

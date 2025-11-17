@@ -639,6 +639,8 @@ export const en = {
     maxDistanceLabel: 'Max distance: {{value}} km',
     maxWorkloadLabel: 'Max workload: {{value}}%',
     secondaryMapAlt: '{{name}} coverage preview map',
+    serviceAreaMapHint: '{{name}} service area map',
+    serviceAreaMapLabel: 'Notary service area',
     secondaryNotSelected: 'Not assigned',
     secondaryOptionalSummary: 'Not required',
     secondaryRequiredAlert: 'Select a secondary notary for recipients outside your service area.',
