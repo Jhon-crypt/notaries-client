@@ -434,10 +434,6 @@ const JobEntry = () => {
     setShowPaymentModal(true);
   };
 
-  const handleSecondarySelect = (id) => {
-    setSecondaryNotary(id);
-  };
-
   const handleConfirmPayment = () => {
     setShowPaymentModal(false);
     setShowPOSModal(true);
@@ -1018,129 +1014,7 @@ const JobEntry = () => {
           </div>
         </div>
 
-        {/* Notary Assignment */}
-        <div className="bg-white rounded-xl shadow-sm border-2 border-blue-200 p-4 sm:p-6 space-y-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('jobEntry.assignedNotariesTitle')}</h2>
-              <p className="text-sm text-gray-600 mt-1">{t('jobEntry.assignedNotariesSubtitle')}</p>
-            </div>
-            <span
-              className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                requiresSecondary ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
-              }`}
-            >
-              {requiresSecondary ? t('jobEntry.secondaryRequiredBadge') : t('jobEntry.secondaryOptionalBadge')}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-            <div className="border-2 border-green-100 rounded-xl p-4 space-y-3 bg-green-50/40">
-              <h3 className="text-xs font-semibold uppercase text-green-700">{t('jobEntry.primaryLabel')}</h3>
-              <p className="text-lg font-bold text-gray-900">
-                {notaryProfile?.fullName || t('jobEntry.currentNotaryFallback')}
-              </p>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>{t('jobEntry.primaryContactLine', { phone: notaryProfile?.phone || '—' })}</p>
-                <p>{t('jobEntry.primaryEmailLine', { email: notaryProfile?.email || '—' })}</p>
-                <p>
-                  {t('jobEntry.primaryBaseChargeLine', {
-                    amount: parseFloat(pricing.baseCharge || DEFAULT_PRICING.baseCharge).toFixed(2),
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className="border-2 border-blue-100 rounded-xl p-4 space-y-4 bg-blue-50/40">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-900">
-                  {t('jobEntry.secondarySelectLabel')}
-                </label>
-                <select
-                  value={secondaryNotary}
-                  onChange={(e) => handleSecondarySelect(e.target.value)}
-                  disabled={!requiresSecondary || !filteredSecondaryNotaries.length}
-                  className="w-full px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-                >
-                  {!requiresSecondary && <option value="">{t('jobEntry.secondaryDisabledOption')}</option>}
-                  {filteredSecondaryNotaries.map((notary) => (
-                    <option key={notary.id} value={notary.id}>
-                      {t('jobEntry.secondaryOptionLabel', {
-                        name: notary.name,
-                        distance: notary.distanceKm.toFixed(1),
-                        workload: Math.round(notary.workload * 100),
-                      })}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500">
-                  {requiresSecondary
-                    ? filteredSecondaryNotaries.length
-                      ? t('jobEntry.secondarySelectionHelp')
-                      : t('jobEntry.secondaryNoResults')
-                    : t('jobEntry.secondaryDisabledHint')}
-                </p>
-              </div>
-
-              <div className="border border-dashed border-blue-200 rounded-lg p-3">
-                <input
-                  type="search"
-                  value={secondaryFilters.query}
-                  onChange={(e) =>
-                    setSecondaryFilters((prev) => ({
-                      ...prev,
-                      query: e.target.value,
-                    }))
-                  }
-                  placeholder={t('jobEntry.secondarySearchPlaceholder')}
-                  className="w-full rounded-lg border border-blue-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="space-y-3">
-                {filteredSecondaryNotaries.map((notary) => (
-                  <button
-                    type="button"
-                    key={notary.id}
-                    onClick={() => handleSecondarySelect(notary.id)}
-                    disabled={!requiresSecondary}
-                    className={`w-full text-left border-2 rounded-lg p-3 transition ${
-                      secondaryNotary === notary.id
-                        ? 'border-blue-500 bg-blue-50 shadow-sm'
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                  >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{notary.name}</p>
-                      <p className="text-xs text-gray-500">{notary.coverageAreas}</p>
-                    </div>
-                    <div className="text-xs font-semibold text-blue-600 text-right">
-                      {notary.distanceKm.toFixed(1)} km • {Math.round(notary.workload * 100)}%
-                    </div>
-                  </div>
-                  <div className="mt-3 relative">
-                    <img
-                      src={notary.mapImage}
-                      alt={t('jobEntry.secondaryMapAlt', { name: notary.name })}
-                      className="w-full h-28 object-cover rounded-lg border border-blue-100"
-                      title={t('jobEntry.serviceAreaMapHint', { name: notary.name })}
-                    />
-                    <p className="text-xs text-gray-500 mt-1 text-center">
-                      {t('jobEntry.serviceAreaMapLabel')}
-                    </p>
-                  </div>
-                </button>
-              ))}
-              {!filteredSecondaryNotaries.length && (
-                <p className="text-xs text-gray-500">{t('jobEntry.secondaryNoResults')}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Total and Payment */}
+        {/* Total and Payment */}
         <div className="bg-white rounded-xl shadow-sm border-2 border-gray-300 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xl sm:text-2xl font-bold text-gray-900">
