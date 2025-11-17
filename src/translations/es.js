@@ -558,7 +558,7 @@ export const es = {
     pickupOffice: 'RECOJO EN OFICINA',
     sendEmail: 'ENVÍO POR EMAIL',
     leaveAtDoor: '¿DEJAR EN PUERTA SI NO RECIBEN?',
-    correspondingAgent: 'AGENTE RECOLECTOR',
+    correspondingAgent: 'Notario corresponsal',
     uploadPDF: 'CARGAR DOCUMENTO',
     desktopUploadHint: 'En computadora, sube el PDF escaneado desde tu multifuncional o arrástralo aquí.',
     serviceAreaStatus: 'Validación de zona de servicio',

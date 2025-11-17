@@ -601,7 +601,7 @@ export const en = {
     pickupOffice: 'PICKUP AT OFFICE',
     sendEmail: 'SEND BY EMAIL',
     leaveAtDoor: 'LEAVE AT DOOR IF NO ONE RECEIVES?',
-    correspondingAgent: 'DELIVERY AGENT',
+    correspondingAgent: 'Correspondent Notary',
     uploadPDF: 'UPLOAD DOCUMENT',
     desktopUploadHint: 'On desktop, upload the scanned PDF produced by your multifunction printer or drag it here.',
     serviceAreaStatus: 'Service area validation',

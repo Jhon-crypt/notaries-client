@@ -354,6 +354,43 @@ const JobEntry = () => {
           [field]: nextValue,
         };
 
+        // Automatically determine service area status when address fields change
+        if (field === 'district' || field === 'province' || field === 'department') {
+          if (serviceZones.length && updated.district) {
+            const recipientCoords = getCoordinatesForAddress(updated.district);
+            let isInside = false;
+
+            try {
+              const zones = typeof serviceZones === 'string' ? JSON.parse(serviceZones) : serviceZones;
+              zones.forEach((zone) => {
+                if (zone.type === 'circle') {
+                  const distance = calculateDistance(
+                    zone.center.lat,
+                    zone.center.lng,
+                    recipientCoords.lat,
+                    recipientCoords.lng
+                  );
+                  const radiusKm = zone.radius / 1000;
+                  if (distance <= radiusKm) {
+                    isInside = true;
+                  }
+                } else if (zone.type === 'polygon') {
+                  const commonServiceDistricts = ['Miraflores', 'San Isidro', 'Surquillo', 'La Molina'];
+                  if (commonServiceDistricts.includes(updated.district)) {
+                    isInside = true;
+                  }
+                }
+              });
+            } catch (error) {
+              console.warn('Error checking service zones:', error);
+            }
+
+            updated.outsideServiceArea = !isInside;
+          } else if (!serviceZones.length) {
+            updated.outsideServiceArea = true;
+          }
+        }
+
         return recalculateCost(updated);
       })
     );
@@ -404,6 +441,19 @@ const JobEntry = () => {
   const calculateTotal = () => {
     return recipients.reduce((sum, r) => sum + (parseFloat(r.cost) || 0), 0).toFixed(2);
   };
+
+  // Automatically determine service area status when service zones are loaded
+  useEffect(() => {
+    if (!serviceZones.length) {
+      // No service zones defined, mark all recipients as outside
+      setRecipients((prev) =>
+        prev.map((recipient) => {
+          if (recipient.outsideServiceArea === true) return recipient;
+          return { ...recipient, outsideServiceArea: true };
+        })
+      );
+    }
+  }, [serviceZones]);
 
   useEffect(() => {
     setRecipients((prev) => prev.map((recipient) => recalculateCost(recipient)));
@@ -569,7 +619,6 @@ const JobEntry = () => {
                         <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.district')}</th>
                         <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.province')}</th>
                         <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.department')}</th>
-                        <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.serviceAreaStatus')}</th>
                         <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.deliveryMethod')}</th>
                         <th className="px-4 py-3 text-left border-r-2 border-gray-300">{t('jobEntry.pickupMethod')}</th>
                         <th className="px-4 py-3 text-center border-r-2 border-gray-300">{t('jobEntry.leaveAtDoor')}</th>
@@ -646,16 +695,6 @@ const JobEntry = () => {
                               <option value="">{t('jobEntry.selectDepartment')}</option>
                               <option value="Lima">Lima</option>
                               <option value="Callao">Callao</option>
-                            </select>
-                          </td>
-                          <td className="px-4 py-3 border-r-2 border-gray-300">
-                            <select
-                              value={recipient.outsideServiceArea ? 'outside' : 'inside'}
-                              onChange={(e) => handleRecipientChange(recipient.id, 'outsideServiceArea', e.target.value === 'outside')}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-white font-semibold"
-                            >
-                              <option value="inside">{t('jobEntry.insideServiceArea')}</option>
-                              <option value="outside">{t('jobEntry.outsideServiceArea')}</option>
                             </select>
                           </td>
                           <td className="px-4 py-3 border-r-2 border-gray-300">
@@ -846,18 +885,6 @@ const JobEntry = () => {
                             <option value="Callao">Callao</option>
                           </select>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">{t('jobEntry.serviceAreaStatus')}</label>
-                        <select
-                          value={recipient.outsideServiceArea ? 'outside' : 'inside'}
-                          onChange={(e) => handleRecipientChange(recipient.id, 'outsideServiceArea', e.target.value === 'outside')}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm bg-white font-semibold"
-                        >
-                          <option value="inside">{t('jobEntry.insideServiceArea')}</option>
-                          <option value="outside">{t('jobEntry.outsideServiceArea')}</option>
-                        </select>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
