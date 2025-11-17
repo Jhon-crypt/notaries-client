@@ -331,7 +331,40 @@ export const es = {
   // Página de Monedas
   coins: {
     title: 'Billetera y mercado de monedas',
-    description: 'Pronto podrás comprar y canjear monedas para priorizar recojos y certificaciones digitales. Por ahora, contacta al soporte si necesitas recargar tu saldo.',
+    description: 'Compra y canjea monedas para priorizar recojos y certificaciones digitales.',
+    buyCoins: 'Comprar Monedas',
+    redeemCoins: 'Canjear Monedas',
+    currentBalance: 'Saldo Actual',
+    coinPriceLabel: 'Precio por moneda',
+    purchaseHistory: 'Historial de Transacciones',
+    transactionType: 'Tipo',
+    amount: 'Cantidad',
+    date: 'Fecha',
+    status: 'Estado',
+    noTransactions: 'Aún no hay transacciones',
+    purchase: 'Compra',
+    redemption: 'Canje',
+    completed: 'Completado',
+    pending: 'Pendiente',
+    buyCoinsTitle: 'Comprar Monedas',
+    buyCoinsDescription: 'Ingresa el monto que deseas gastar para comprar monedas.',
+    amountToBuy: 'Monto a Gastar (S/.)',
+    youWillReceive: 'Recibirás',
+    coins: 'monedas',
+    perCoin: 'por moneda',
+    paymentMethod: 'Método de Pago',
+    creditCard: 'Tarjeta de Crédito',
+    paypal: 'PayPal',
+    confirmPurchase: 'Confirmar Compra',
+    redeemCoinsTitle: 'Canjear Monedas',
+    redeemCoinsDescription: 'Convierte tus monedas de vuelta a efectivo. Los canjes se procesan en 3-5 días hábiles.',
+    amountToRedeem: 'Monedas a Canjear',
+    availableBalance: 'Disponible',
+    cashValue: 'Valor en Efectivo',
+    bankAccount: 'Cuenta Bancaria',
+    bankAccountPlaceholder: 'Ingresa tu número de cuenta bancaria',
+    confirmRedemption: 'Confirmar Canje',
+    insufficientBalance: 'Saldo insuficiente',
   },
 
   // Página de Clientes
@@ -385,6 +418,8 @@ export const es = {
       digitalCertFeeLabel: 'Fee por firma digital (S/.)',
       serviceFeeLabel: 'Fee del servicio para notarios (%)',
       revenueShareLabel: 'Participación de ingresos de la plataforma (%)',
+      coinPriceLabel: 'Precio de moneda (S/.)',
+      coinPriceHint: 'Precio por moneda que pagan los notarios al comprar monedas.',
       saveRates: 'Guardar tarifas',
       defaultStartLabel: 'Inicio por defecto',
       defaultEndLabel: 'Fin por defecto',
@@ -576,6 +611,18 @@ export const es = {
     confirmationSent: 'El número de confirmación {{confirmation}} fue generado y enviado por correo al cliente.',
     confirmationPending: 'Se generó un número de confirmación y se enviará por correo al cliente.',
     certificationSend: 'ENVIAR',
+    posProcessing: 'Procesando Pago',
+    posSuccess: 'Pago Exitoso',
+    posProcessingMessage: 'Por favor espere mientras procesamos su pago...',
+    posSuccessMessage: 'Su pago ha sido procesado exitosamente.',
+    posAmount: 'Monto',
+    posMethod: 'Método de Pago',
+    posMethodValue: 'Pago con Tarjeta',
+    digitalSignaturePromptTitle: 'Firma Digital Requerida',
+    digitalSignaturePromptDescription: 'Necesitas una firma digital para enviar documentos. ¿Deseas generar una ahora?',
+    generateSignature: 'Generar Ahora',
+    digitalSignatureLater: 'Recordármelo Luego',
+    digitalSignatureGenerated: '¡Firma digital generada exitosamente!',
   },
 
   // Barra Superior
@@ -622,7 +669,7 @@ export const es = {
 
   // Pie de página
   footer: {
-    copyright: '© 2024 NotaryChain. Todos los derechos reservados.',
+    copyright: '© 2025 NotaryChain. Todos los derechos reservados.',
   },
 };
 

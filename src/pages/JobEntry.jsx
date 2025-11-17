@@ -130,6 +130,10 @@ const JobEntry = () => {
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCertificationModal, setShowCertificationModal] = useState(false);
+  const [showPOSModal, setShowPOSModal] = useState(false);
+  const [posProcessing, setPosProcessing] = useState(false);
+  const [showDigitalSignaturePrompt, setShowDigitalSignaturePrompt] = useState(false);
+  const [digitalSignatureChecked, setDigitalSignatureChecked] = useState(false);
 
   useEffect(() => {
     try {
@@ -212,6 +216,18 @@ const JobEntry = () => {
       console.warn('Unable to load system setup config', error);
     }
   }, []);
+
+  // Check for digital signature when sender email is entered
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'client' && sender.email && !digitalSignatureChecked) {
+      const signatureStatus = localStorage.getItem('clientSignatureStatus') || 'not_setup';
+      if (signatureStatus === 'not_setup' || signatureStatus === 'later') {
+        setShowDigitalSignaturePrompt(true);
+        setDigitalSignatureChecked(true);
+      }
+    }
+  }, [sender.email, digitalSignatureChecked]);
 
   const handleSenderChange = (e) => {
     setSender({
@@ -346,9 +362,17 @@ const JobEntry = () => {
 
   const handleConfirmPayment = () => {
     setShowPaymentModal(false);
-    const generated = `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    setConfirmationNumber(generated);
-    setShowCertificationModal(true);
+    setShowPOSModal(true);
+    setPosProcessing(true);
+    
+    // Simulate POS processing
+    setTimeout(() => {
+      setPosProcessing(false);
+      const generated = `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      setConfirmationNumber(generated);
+      setShowPOSModal(false);
+      setShowCertificationModal(true);
+    }, 2500);
   };
 
   const handleCloseCertification = () => {
@@ -1141,6 +1165,90 @@ const JobEntry = () => {
                 className="px-4 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow"
               >
                 {t('jobEntry.confirmPayment')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* POS Mockup Modal */}
+      {showPOSModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                {posProcessing ? (
+                  <svg className="w-8 h-8 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {posProcessing ? t('jobEntry.posProcessing') : t('jobEntry.posSuccess')}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {posProcessing ? t('jobEntry.posProcessingMessage') : t('jobEntry.posSuccessMessage')}
+              </p>
+            </div>
+
+            {posProcessing && (
+              <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <div className="flex items-center justify-between text-sm text-gray-700 mb-2">
+                  <span>{t('jobEntry.posAmount')}</span>
+                  <span className="font-bold text-lg">S/. {calculateTotal()}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{t('jobEntry.posMethod')}</span>
+                  <span>{t('jobEntry.posMethodValue')}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Digital Signature Prompt Modal */}
+      {showDigitalSignaturePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-amber-100 rounded-full">
+                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">{t('jobEntry.digitalSignaturePromptTitle')}</h3>
+                <p className="text-sm text-gray-600">{t('jobEntry.digitalSignaturePromptDescription')}</p>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDigitalSignaturePrompt(false);
+                  // Generate signature on the fly
+                  localStorage.setItem('clientSignatureStatus', 'active');
+                  alert(t('jobEntry.digitalSignatureGenerated'));
+                }}
+                className="px-4 py-3 rounded-lg bg-amber-600 text-white font-semibold hover:bg-amber-700 transition-colors"
+              >
+                {t('jobEntry.generateSignature')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDigitalSignaturePrompt(false);
+                  localStorage.setItem('clientSignatureStatus', 'later');
+                }}
+                className="px-4 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
+              >
+                {t('jobEntry.digitalSignatureLater')}
               </button>
             </div>
           </div>

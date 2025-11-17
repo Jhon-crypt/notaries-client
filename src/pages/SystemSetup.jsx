@@ -13,6 +13,7 @@ const defaultConfig = {
     digitalCertFee: 5.0,
     serviceFeePct: 12,
     revenueSharePct: 35,
+    coinPrice: 1.0,
   },
   deliveryWindows: {
     defaultStart: '09:00',
@@ -47,6 +48,7 @@ const SystemSetup = () => {
           serviceRates: {
             ...defaultConfig.serviceRates,
             ...(parsed.serviceRates || {}),
+            coinPrice: parsed.serviceRates?.coinPrice ?? defaultConfig.serviceRates.coinPrice,
           },
           deliveryWindows: {
             ...defaultConfig.deliveryWindows,
@@ -58,7 +60,7 @@ const SystemSetup = () => {
           },
         });
       }
-    } catch (e) {
+    } catch {
       // ignore and fall back to defaults
     }
   }, []);
@@ -172,6 +174,21 @@ const SystemSetup = () => {
               onChange={(e) => update('serviceRates.revenueSharePct', parseFloat(e.target.value || 0))}
               className="mt-1 w-full rounded-lg border px-3 py-2"
             />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.coinPriceLabel')}</label>
+            <input
+              type="number"
+              step="0.01"
+              value={config.serviceRates.coinPrice}
+              onChange={(e) => {
+                update('serviceRates.coinPrice', parseFloat(e.target.value || 0));
+                // Also save to dedicated storage for easy access
+                localStorage.setItem('coinPrice_v1', e.target.value);
+              }}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+            <p className="text-xs text-gray-500 mt-1">{t('admin.parameters.coinPriceHint')}</p>
           </div>
         </div>
         <div className="mt-4 flex justify-end">
