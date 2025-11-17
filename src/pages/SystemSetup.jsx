@@ -21,6 +21,7 @@ const defaultConfig = {
     sameDayCutoff: '14:00',
     allowWeekend: false,
     maxSecondaryDistanceKm: 15,
+    maxSecondaryWorkload: 0.85,
   },
   notifications: {
     emailSubject: 'Your notarized document is ready',
@@ -257,6 +258,19 @@ const SystemSetup = () => {
               onChange={(e) => update('deliveryWindows.maxSecondaryDistanceKm', parseFloat(e.target.value || 0))}
               className="mt-1 w-full rounded-lg border px-3 py-2"
             />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600">{t('admin.parameters.maxSecondaryWorkloadLabel')}</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              value={config.deliveryWindows.maxSecondaryWorkload}
+              onChange={(e) => update('deliveryWindows.maxSecondaryWorkload', parseFloat(e.target.value || 0))}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+            <p className="text-xs text-gray-500 mt-1">{t('admin.parameters.maxSecondaryWorkloadHint')}</p>
           </div>
           <div className="sm:col-span-3">
             <label className="inline-flex items-center gap-2">

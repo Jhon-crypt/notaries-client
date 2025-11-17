@@ -283,6 +283,12 @@ const JobEntry = () => {
             maxDistance: parsed.deliveryWindows.maxSecondaryDistanceKm,
           }));
         }
+        if (parsed?.deliveryWindows?.maxSecondaryWorkload !== undefined) {
+          setSecondaryFilters((prev) => ({
+            ...prev,
+            maxWorkload: parsed.deliveryWindows.maxSecondaryWorkload,
+          }));
+        }
       }
     } catch (error) {
       console.warn('Unable to load system setup config', error);
@@ -1076,7 +1082,7 @@ const JobEntry = () => {
                 </p>
               </div>
 
-              <div className="border border-dashed border-blue-200 rounded-lg p-3 space-y-3">
+              <div className="border border-dashed border-blue-200 rounded-lg p-3">
                 <input
                   type="search"
                   value={secondaryFilters.query}
@@ -1089,42 +1095,6 @@ const JobEntry = () => {
                   placeholder={t('jobEntry.secondarySearchPlaceholder')}
                   className="w-full rounded-lg border border-blue-200 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
                 />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600">
-                  <label className="flex flex-col gap-1">
-                    <span className="font-semibold">
-                      {t('jobEntry.maxDistanceLabel', { value: secondaryFilters.maxDistance })}
-                    </span>
-                    <input
-                      type="range"
-                      min="1"
-                      max="25"
-                      value={secondaryFilters.maxDistance}
-                      onChange={(e) =>
-                        setSecondaryFilters((prev) => ({
-                          ...prev,
-                          maxDistance: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-                  <label className="flex flex-col gap-1">
-                    <span className="font-semibold">
-                      {t('jobEntry.maxWorkloadLabel', { value: Math.round(secondaryFilters.maxWorkload * 100) })}
-                    </span>
-                    <input
-                      type="range"
-                      min="30"
-                      max="100"
-                      value={Math.round(secondaryFilters.maxWorkload * 100)}
-                      onChange={(e) =>
-                        setSecondaryFilters((prev) => ({
-                          ...prev,
-                          maxWorkload: Number(e.target.value) / 100,
-                        }))
-                      }
-                    />
-                  </label>
-                </div>
               </div>
 
               <div className="space-y-3">
