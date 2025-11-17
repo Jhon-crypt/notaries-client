@@ -39,6 +39,8 @@ export const en = {
     actions: 'Actions',
     details: 'Details',
     allRightsReserved: 'All rights reserved',
+    accessDenied: 'Access Denied',
+    adminOnlyAccess: 'This page is only accessible to administrators.',
   },
 
   // Navigation menu

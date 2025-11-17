@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminRoute from './components/auth/AdminRoute';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import AdminSignup from './pages/auth/AdminSignup';
@@ -36,7 +37,11 @@ function App() {
           <Route path="notaries" element={<Notaries />} />
           <Route path="calendar" element={<div className="text-2xl font-bold">Calendar (Coming Soon)</div>} />
           <Route path="settings" element={<Settings />} />
-          <Route path="system-setup" element={<SystemSetup />} />
+          <Route path="system-setup" element={
+            <AdminRoute>
+              <SystemSetup />
+            </AdminRoute>
+          } />
           <Route path="coins" element={<Coins />} />
           <Route path="profile" element={<Profile />} />
         </Route>

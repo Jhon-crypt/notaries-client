@@ -39,6 +39,8 @@ export const es = {
     actions: 'Acciones',
     details: 'Detalles',
     allRightsReserved: 'Todos los derechos reservados',
+    accessDenied: 'Acceso Denegado',
+    adminOnlyAccess: 'Esta página solo es accesible para administradores.',
   },
 
   // Menú de navegación
@@ -403,6 +405,8 @@ export const es = {
     twoFactorAuth: 'Autenticación de Dos Factores',
     enable: 'Habilitar',
     disable: 'Deshabilitar',
+    systemParametersTitle: 'Parámetros del sistema',
+    systemParametersDescription: 'Configura la tarifa predeterminada, las ventanas de entrega y las notificaciones automatizadas que se aplican a cada trabajo notarial.',
     parameters: {
       serviceRatesTitle: 'Tarifas y recargos',
       serviceRatesDescription: 'Actualiza la tarifa base, los recargos por urgencia y el costo de certificación digital que aplican a cada carta notarial.',

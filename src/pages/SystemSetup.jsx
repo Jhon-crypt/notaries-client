@@ -39,6 +39,10 @@ const SystemSetup = () => {
   const [config, setConfig] = useState(defaultConfig);
   const [status, setStatus] = useState('');
 
+  // Check if user is admin (safety check)
+  const userRole = localStorage.getItem('userRole');
+  const isAdmin = userRole === 'admin';
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LOCAL_KEY);
@@ -85,6 +89,18 @@ const SystemSetup = () => {
       return next;
     });
   };
+
+  // Show access denied if not admin
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('common.accessDenied')}</h2>
+          <p className="text-gray-600">{t('common.adminOnlyAccess')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
