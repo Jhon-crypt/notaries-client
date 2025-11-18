@@ -363,6 +363,7 @@ export const es = {
     casesThisMonth: 'Casos Este Mes',
     location: 'Ubicación',
     specialization: 'Especialización',
+    noSpecialty: 'Sin especialidad',
     rating: 'Calificación',
     cases: 'Casos',
     viewProfile: 'Ver Perfil',

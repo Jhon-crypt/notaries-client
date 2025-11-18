@@ -7,9 +7,51 @@ const Notaries = () => {
   const isAdmin = userRole === 'admin';
 
   const notaries = [
-    { id: 1, name: 'Sarah Williams', license: 'NOT-2024-001', location: 'New York, NY', specialization: 'Real Estate', rating: 4.9, cases: 234 },
-    { id: 2, name: 'Michael Chen', license: 'NOT-2024-002', location: 'Los Angeles, CA', specialization: 'Legal Documents', rating: 4.8, cases: 189 },
-    { id: 3, name: 'Jessica Martinez', license: 'NOT-2024-003', location: 'Chicago, IL', specialization: 'Corporate', rating: 4.7, cases: 156 },
+    { 
+      id: 1, 
+      name: 'Sarah Williams', 
+      license: 'NOT-2024-001', 
+      address: {
+        street: '123 Broadway',
+        city: 'New York',
+        state: 'NY',
+        zip: '10001'
+      },
+      phone: '+1 (212) 555-1234',
+      specialization: 'Real Estate', 
+      rating: 4.9, 
+      cases: 234 
+    },
+    { 
+      id: 2, 
+      name: 'Michael Chen', 
+      license: 'NOT-2024-002', 
+      address: {
+        street: '456 Sunset Blvd',
+        city: 'Los Angeles',
+        state: 'CA',
+        zip: '90028'
+      },
+      phone: '+1 (323) 555-5678',
+      specialization: 'Legal Documents', 
+      rating: 4.8, 
+      cases: 189 
+    },
+    { 
+      id: 3, 
+      name: 'Jessica Martinez', 
+      license: 'NOT-2024-003', 
+      address: {
+        street: '789 Michigan Ave',
+        city: 'Chicago',
+        state: 'IL',
+        zip: '60611'
+      },
+      phone: '+1 (312) 555-9012',
+      specialization: 'Corporate', 
+      rating: 4.7, 
+      cases: 156 
+    },
   ];
 
   return (
@@ -66,15 +108,32 @@ const Notaries = () => {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900">{notary.name}</h3>
                   <p className="text-xs sm:text-sm text-gray-500 truncate">{t('admin.license')}: {notary.license}</p>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-2">
-                    <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex flex-col gap-2 mt-2">
+                    <span className="text-xs sm:text-sm text-gray-600 flex items-start gap-1">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <span className="truncate">{notary.location}</span>
+                      <span className="flex-1">
+                        {notary.address?.street && (
+                          <span className="block">{notary.address.street}, {notary.address.city}, {notary.address.state} {notary.address.zip}</span>
+                        )}
+                        {!notary.address?.street && notary.location && (
+                          <span>{notary.location}</span>
+                        )}
+                      </span>
                     </span>
-                    <span className="text-xs sm:text-sm text-gray-600 truncate">{notary.specialization}</span>
+                    {notary.phone && (
+                      <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <span>{notary.phone}</span>
+                      </span>
+                    )}
+                    <span className="text-xs sm:text-sm text-gray-600">
+                      {notary.specialization || t('notaries.noSpecialty')}
+                    </span>
                   </div>
                 </div>
               </div>

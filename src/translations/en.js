@@ -406,6 +406,7 @@ export const en = {
     casesThisMonth: 'Cases This Month',
     location: 'Location',
     specialization: 'Specialization',
+    noSpecialty: 'No specialty',
     rating: 'Rating',
     cases: 'Cases',
     viewProfile: 'View Profile',
