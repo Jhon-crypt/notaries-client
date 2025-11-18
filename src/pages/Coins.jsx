@@ -29,17 +29,19 @@ const Coins = () => {
 
     // Load coin price from admin settings
     try {
-      const setupRaw = localStorage.getItem('systemSetupConfig_v1');
-      if (setupRaw) {
-        const parsed = JSON.parse(setupRaw);
-        if (parsed.coinPrice) {
-          setCoinPrice(parseFloat(parsed.coinPrice));
-        }
-      }
-      // Also check dedicated coin price storage
+      // First check dedicated coin price storage (priority)
       const priceRaw = localStorage.getItem(COIN_PRICE_KEY);
       if (priceRaw) {
         setCoinPrice(parseFloat(priceRaw));
+        return; // Use dedicated storage if available
+      }
+      // Fallback to system setup config
+      const setupRaw = localStorage.getItem('systemSetupConfig_v1');
+      if (setupRaw) {
+        const parsed = JSON.parse(setupRaw);
+        if (parsed?.serviceRates?.coinPrice) {
+          setCoinPrice(parseFloat(parsed.serviceRates.coinPrice));
+        }
       }
     } catch (e) {
       console.warn('Failed to load coin price', e);

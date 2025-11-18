@@ -295,10 +295,9 @@ const JobEntry = () => {
     }
   }, []);
 
-  // Check for digital signature when sender email is entered
+  // Check for digital signature when sender email is entered (for all users sending documents)
   useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole === 'client' && sender.email && !digitalSignatureChecked) {
+    if (sender.email && !digitalSignatureChecked) {
       const signatureStatus = localStorage.getItem('clientSignatureStatus') || 'not_setup';
       if (signatureStatus === 'not_setup' || signatureStatus === 'later') {
         setShowDigitalSignaturePrompt(true);
@@ -489,14 +488,19 @@ const JobEntry = () => {
     setShowPOSModal(true);
     setPosProcessing(true);
     
-    // Simulate POS processing
+    // Simulate POS processing - show POS modal for user interaction
     setTimeout(() => {
       setPosProcessing(false);
-      const generated = `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      setConfirmationNumber(generated);
-      setShowPOSModal(false);
-      setShowCertificationModal(true);
+      // Don't auto-close POS modal - let user see success and proceed manually
     }, 2500);
+  };
+
+  const handlePOSSuccess = () => {
+    // Generate confirmation number and proceed to certification
+    const generated = `CN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    setConfirmationNumber(generated);
+    setShowPOSModal(false);
+    setShowCertificationModal(true);
   };
 
   const handleCloseCertification = () => {
@@ -1144,16 +1148,26 @@ const JobEntry = () => {
               </p>
             </div>
 
-            {posProcessing && (
-              <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                <div className="flex items-center justify-between text-sm text-gray-700 mb-2">
-                  <span>{t('jobEntry.posAmount')}</span>
-                  <span className="font-bold text-lg">S/. {calculateTotal()}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>{t('jobEntry.posMethod')}</span>
-                  <span>{t('jobEntry.posMethodValue')}</span>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between text-sm text-gray-700 mb-2">
+                <span>{t('jobEntry.posAmount')}</span>
+                <span className="font-bold text-lg">S/. {calculateTotal()}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{t('jobEntry.posMethod')}</span>
+                <span>{t('jobEntry.posMethodValue')}</span>
+              </div>
+            </div>
+
+            {!posProcessing && (
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={handlePOSSuccess}
+                  className="w-full px-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors shadow"
+                >
+                  {t('common.continue')}
+                </button>
               </div>
             )}
           </div>

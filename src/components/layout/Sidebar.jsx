@@ -66,8 +66,8 @@ const Sidebar = () => {
     { icon: baseIcons.clients, path: '/dashboard/clients', labelKey: 'nav.clients' },
     { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
     { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
+    { icon: baseIcons.coins, path: '/dashboard/coins', labelKey: 'nav.coins', highlight: true },
     { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
-    { icon: baseIcons.coins, path: '/dashboard/coins', labelKey: 'nav.coins', mobileOnly: true, highlight: true },
   ];
 
   const clientMenu = [
