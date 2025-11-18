@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 const Settings = () => {
   const { t, language, setLanguage } = useLanguage();
+  const userRole = localStorage.getItem('userRole');
+  const isAdmin = userRole === 'admin';
   
   return (
     <div className="space-y-6">
@@ -119,21 +121,23 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Advanced System Setup (Admins) */}
-      <div className="bg-white rounded-xl p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">{t('admin.systemParametersTitle')}</h2>
-            <p className="text-sm text-gray-600 mt-1">{t('admin.systemParametersDescription')}</p>
+      {/* Advanced System Setup (Admins Only) */}
+      {isAdmin && (
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">{t('admin.systemParametersTitle')}</h2>
+              <p className="text-sm text-gray-600 mt-1">{t('admin.systemParametersDescription')}</p>
+            </div>
+            <Link
+              to="/dashboard/system-setup"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
+            >
+              {t('common.viewAll')}
+            </Link>
           </div>
-          <Link
-            to="/dashboard/system-setup"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
-          >
-            {t('common.viewAll')}
-          </Link>
         </div>
-      </div>
+      )}
 
       {/* Notification Settings */}
       <div className="bg-white rounded-xl p-6 shadow-sm">
