@@ -73,6 +73,7 @@ const Sidebar = () => {
   const clientMenu = [
     { icon: baseIcons.dashboard, path: '/dashboard', labelKey: 'nav.dashboard' },
     { icon: baseIcons.documents, path: '/dashboard/documents', labelKey: 'nav.myDocuments' },
+    { icon: baseIcons.job, path: '/dashboard/job-entry', labelKey: 'nav.newJob', highlight: true },
     { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
     { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
     { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
@@ -152,12 +153,12 @@ const Sidebar = () => {
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 px-1 py-3 z-50 shadow-lg">
-        <nav className="flex items-center justify-around max-w-screen-xl mx-auto">
+        <nav className="flex items-center justify-center gap-1 sm:gap-2 max-w-screen-xl mx-auto">
           {menuItems.map((item, index) => (
             <Link
               key={index}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-all min-w-[60px] ${
+              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-all flex-1 max-w-[80px] ${
                 isActive(item.path)
                   ? item.highlight
                     ? 'text-green-600 bg-green-50'

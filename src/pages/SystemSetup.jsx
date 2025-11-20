@@ -5,7 +5,6 @@ const LOCAL_KEY = 'systemSetupConfig_v1';
 
 const defaultConfig = {
   serviceRates: {
-    basePrice: 20.0,
     maxBasePrice: 60.0,
     standardSurchargePct: 0,
     fastSurchargePct: 50,
@@ -121,15 +120,6 @@ const SystemSetup = () => {
         <p className="text-sm text-gray-600 mb-4">{t('admin.parameters.serviceRatesDescription')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-600">{t('admin.parameters.basePriceLabel')}</label>
-            <input
-              type="number"
-              value={config.serviceRates.basePrice}
-              onChange={(e) => update('serviceRates.basePrice', parseFloat(e.target.value || 0))}
-              className="mt-1 w-full rounded-lg border px-3 py-2"
-            />
-          </div>
-          <div>
             <label className="block text-sm text-gray-600">{t('admin.parameters.maxBasePriceLabel')}</label>
             <input
               type="number"
@@ -223,33 +213,6 @@ const SystemSetup = () => {
         <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.parameters.deliveryWindowsTitle')}</h2>
         <p className="text-sm text-gray-600 mb-4">{t('admin.parameters.deliveryWindowsDescription')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm text-gray-600">{t('admin.parameters.defaultStartLabel')}</label>
-            <input
-              type="time"
-              value={config.deliveryWindows.defaultStart}
-              onChange={(e) => update('deliveryWindows.defaultStart', e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-600">{t('admin.parameters.defaultEndLabel')}</label>
-            <input
-              type="time"
-              value={config.deliveryWindows.defaultEnd}
-              onChange={(e) => update('deliveryWindows.defaultEnd', e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-600">{t('admin.parameters.sameDayCutoffLabel')}</label>
-            <input
-              type="time"
-              value={config.deliveryWindows.sameDayCutoff}
-              onChange={(e) => update('deliveryWindows.sameDayCutoff', e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2"
-            />
-          </div>
           <div>
             <label className="block text-sm text-gray-600">{t('admin.parameters.maxSecondaryDistanceLabel')}</label>
             <input

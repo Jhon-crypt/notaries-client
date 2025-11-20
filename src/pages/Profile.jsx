@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import ServiceZoneMap from '../components/maps/ServiceZoneMap';
+import { loadGoogleMaps } from '../utils/loadGoogleMaps';
 
 const DEFAULT_NOTARY = {
   fullName: 'Carlic Bolomboy',
@@ -113,6 +114,15 @@ const Profile = () => {
       return [];
     }
   }, [serviceZones]);
+
+  // Ensure Google Maps is loaded when profile page mounts (for notaries)
+  useEffect(() => {
+    if (userRole === 'notary') {
+      loadGoogleMaps().catch(error => {
+        console.warn('Google Maps could not be loaded:', error);
+      });
+    }
+  }, [userRole]);
 
   const handleNotaryInputChange = (event) => {
     const { name, value, type, checked } = event.target;

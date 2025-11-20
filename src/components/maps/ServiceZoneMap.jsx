@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { loadGoogleMaps } from '../../utils/loadGoogleMaps';
 
 const ServiceZoneMap = ({ onChange, initialZones }) => {
   const [drawnZones, setDrawnZones] = useState([]);
@@ -50,6 +51,7 @@ const ServiceZoneMap = ({ onChange, initialZones }) => {
 
   const initializeMap = useCallback(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
+    if (!window.google || !window.google.maps) return;
 
     // Default location: Lima, Peru (as per client requirement - Peruvian context)
     const defaultLocation = { lat: -12.0464, lng: -77.0428 }; // Lima, Peru
@@ -132,15 +134,38 @@ const ServiceZoneMap = ({ onChange, initialZones }) => {
       // Add delete button to overlay
       addDeleteButton(event.overlay);
     });
-  }, [addDeleteButton]);
+  }, [addDeleteButton, updateZonesData]);
 
-  // Check if Google Maps API is loaded
+  // Check if Google Maps API is loaded, and load it if not
   useEffect(() => {
+    if (!mapRef.current) return;
+
     if (window.google && window.google.maps) {
-      initializeMap();
+      // Google Maps already loaded, initialize map
+      setTimeout(() => {
+        if (mapRef.current && !mapInstanceRef.current) {
+          initializeMap();
+        }
+      }, 100);
     } else {
-      // Google Maps not loaded - show placeholder
-      console.warn('Google Maps API not loaded. Please add VITE_GOOGLE_MAPS_API_KEY to your .env file');
+      // Try to load Google Maps
+      loadGoogleMaps()
+        .then(() => {
+          // Google Maps loaded, wait for mapRef to be ready
+          const checkAndInit = () => {
+            if (mapRef.current && !mapInstanceRef.current && window.google && window.google.maps) {
+              initializeMap();
+            } else if (mapRef.current) {
+              // Retry after a short delay
+              setTimeout(checkAndInit, 100);
+            }
+          };
+          checkAndInit();
+        })
+        .catch((error) => {
+          console.warn('Google Maps API not loaded:', error);
+          // Placeholder will be shown by the component's render logic
+        });
     }
   }, [initializeMap]);
 
