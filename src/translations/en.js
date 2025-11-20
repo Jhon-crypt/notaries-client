@@ -663,6 +663,8 @@ export const en = {
     confirmationSent: 'Confirmation number {{confirmation}} has been generated and emailed to the client.',
     confirmationPending: 'A confirmation number has been generated and will be emailed to the client.',
     certificationSend: 'SEND',
+    sendDocument: 'SEND DOCUMENT',
+    noDocumentToDisplay: 'No document to display',
     posProcessing: 'Processing Payment',
     posSuccess: 'Payment Successful',
     posProcessingMessage: 'Please wait while we process your payment...',

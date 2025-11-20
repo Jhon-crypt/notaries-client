@@ -620,6 +620,8 @@ export const es = {
     confirmationSent: 'El número de confirmación {{confirmation}} fue generado y enviado por correo al cliente.',
     confirmationPending: 'Se generó un número de confirmación y se enviará por correo al cliente.',
     certificationSend: 'ENVIAR',
+    sendDocument: 'ENVIAR DOCUMENTO',
+    noDocumentToDisplay: 'No hay documento para mostrar',
     posProcessing: 'Procesando Pago',
     posSuccess: 'Pago Exitoso',
     posProcessingMessage: 'Por favor espere mientras procesamos su pago...',

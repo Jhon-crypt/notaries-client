@@ -508,6 +508,23 @@ const JobEntry = () => {
     setConfirmationNumber('');
   };
 
+  const handleSendDocument = () => {
+    // Handle sending the certified document
+    console.log('Sending certified document:', {
+      confirmationNumber,
+      recipients,
+      pdfFiles: recipients.map(r => r.pdfFile?.name).filter(Boolean)
+    });
+    // Close modal and reset form
+    setShowCertificationModal(false);
+    setConfirmationNumber('');
+    // Reset form or navigate to success page
+    alert('Documento certificado enviado exitosamente');
+  };
+
+  // Get the first PDF file for display
+  const displayPdfFile = recipients.find(r => r.pdfFile)?.pdfFile;
+
   return (
     <div className="space-y-4 sm:space-y-6 max-w-full">
       {/* Header */}
@@ -1218,45 +1235,103 @@ const JobEntry = () => {
         </div>
       )}
 
-      {/* Certification Modal */}
+      {/* Certification Modal - Document Display with Certification */}
       {showCertificationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-5">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5 4a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <div className="fixed inset-0 z-50 bg-black/80 p-4 overflow-y-auto">
+          <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl my-8">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{t('jobEntry.certificationTitle')}</h3>
+                  {confirmationNumber && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      {t('jobEntry.confirmationSent', { confirmation: confirmationNumber })}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCloseCertification}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('jobEntry.certificationTitle')}</h3>
-            <p className="text-sm text-gray-600 mb-6">{t('jobEntry.certificationSubtitle')}</p>
 
-            <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-left space-y-3">
-              <p className="text-sm text-green-800">
-                {t('jobEntry.certificationBody')}
-              </p>
-              <ul className="list-disc list-inside text-sm text-green-700 space-y-1">
-                <li>{t('jobEntry.certificationChecklist1')}</li>
-                <li>{t('jobEntry.certificationChecklist2')}</li>
-                <li>{t('jobEntry.certificationChecklist3')}</li>
-              </ul>
+            {/* PDF Document Display with Certification Overlay */}
+            <div className="relative bg-gray-100 p-4 sm:p-6">
+              {displayPdfFile ? (
+                <div className="relative bg-white rounded-lg shadow-lg overflow-hidden" style={{ minHeight: '600px' }}>
+                  {/* PDF Viewer */}
+                  <iframe
+                    src={URL.createObjectURL(displayPdfFile)}
+                    className="w-full"
+                    style={{ height: '700px' }}
+                    title="Certified Document Preview"
+                  />
+                  
+                  {/* Certification Text Overlay - Blue */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-blue-600 p-6 text-white shadow-lg">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0">
+                        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-lg font-bold mb-2">DOCUMENTO CERTIFICADO</h4>
+                        <p className="text-sm mb-2">
+                          {t('jobEntry.certificationBody')}
+                        </p>
+                        <ul className="text-xs space-y-1 opacity-90">
+                          <li>✓ {t('jobEntry.certificationChecklist1')}</li>
+                          <li>✓ {t('jobEntry.certificationChecklist2')}</li>
+                          <li>✓ {t('jobEntry.certificationChecklist3')}</li>
+                        </ul>
+                        {confirmationNumber && (
+                          <p className="text-xs mt-3 font-semibold">
+                            Número de Confirmación: {confirmationNumber}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+                  <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className="text-gray-600">{t('jobEntry.noDocumentToDisplay')}</p>
+                </div>
+              )}
             </div>
 
-            <p className="mt-4 text-sm text-gray-600">
-              {confirmationNumber
-                ? t('jobEntry.confirmationSent', { confirmation: confirmationNumber })
-                : t('jobEntry.confirmationPending')}
-            </p>
-
-            <button
-              type="button"
-              onClick={handleCloseCertification}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-green-600 px-6 py-3 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              {t('jobEntry.certificationSend')}
-            </button>
+            {/* Action Buttons */}
+            <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={handleCloseCertification}
+                className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSendDocument}
+                disabled={!displayPdfFile}
+                className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                {t('jobEntry.sendDocument')}
+              </button>
+            </div>
           </div>
         </div>
       )}
