@@ -7,7 +7,7 @@ const Settings = () => {
   const isAdmin = userRole === 'admin';
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 md:pb-6">
       <h1 className="text-3xl font-bold text-gray-900">{t('nav.settings')}</h1>
 
       {/* Language Settings - PRIMARY */}

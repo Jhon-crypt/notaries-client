@@ -65,7 +65,6 @@ const Sidebar = () => {
     { icon: baseIcons.job, path: '/dashboard/job-entry', labelKey: 'nav.newJob', highlight: true },
     { icon: baseIcons.clients, path: '/dashboard/clients', labelKey: 'nav.clients' },
     { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
-    { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
     { icon: baseIcons.coins, path: '/dashboard/coins', labelKey: 'nav.coins', highlight: true },
     { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
   ];
@@ -75,7 +74,6 @@ const Sidebar = () => {
     { icon: baseIcons.documents, path: '/dashboard/documents', labelKey: 'nav.myDocuments' },
     { icon: baseIcons.job, path: '/dashboard/job-entry', labelKey: 'nav.newJob', highlight: true },
     { icon: baseIcons.notaries, path: '/dashboard/notaries', labelKey: 'nav.notaries' },
-    { icon: baseIcons.calendar, path: '/dashboard/calendar', labelKey: 'nav.calendar' },
     { icon: baseIcons.settings, path: '/dashboard/settings', labelKey: 'nav.settings' },
   ];
 
@@ -152,13 +150,13 @@ const Sidebar = () => {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 px-1 py-3 z-50 shadow-lg">
-        <nav className="flex items-center justify-center gap-1 sm:gap-2 max-w-screen-xl mx-auto">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 px-2 py-3 z-50 shadow-lg">
+        <nav className="flex items-center justify-around gap-1 sm:gap-2 max-w-screen-xl mx-auto">
           {menuItems.map((item, index) => (
             <Link
               key={index}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 rounded-lg transition-all flex-1 max-w-[80px] ${
+              className={`flex flex-col items-center justify-center gap-1 px-1.5 py-1 rounded-lg transition-all flex-1 ${
                 isActive(item.path)
                   ? item.highlight
                     ? 'text-green-600 bg-green-50'
@@ -166,10 +164,10 @@ const Sidebar = () => {
                   : 'text-gray-500'
               }`}
             >
-              <div className="w-6 h-6 flex items-center justify-center">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
                 {item.icon}
               </div>
-              <span className="text-[9px] sm:text-[10px] font-medium text-center leading-tight">{t(item.labelKey)}</span>
+              <span className="text-[8px] sm:text-[9px] font-medium text-center leading-tight">{t(item.labelKey)}</span>
             </Link>
           ))}
         </nav>
