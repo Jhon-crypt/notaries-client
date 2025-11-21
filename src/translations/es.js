@@ -632,6 +632,8 @@ export const es = {
     certificationSend: 'ENVIAR',
     sendDocument: 'ENVIAR DOCUMENTO',
     noDocumentToDisplay: 'No hay documento para mostrar',
+    fullNameMissing: 'Falta el nombre completo',
+    zipCodeMissing: 'Falta el código postal',
     posProcessing: 'Procesando Pago',
     posSuccess: 'Pago Exitoso',
     posProcessingMessage: 'Por favor espere mientras procesamos su pago...',

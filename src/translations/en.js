@@ -676,6 +676,8 @@ export const en = {
     certificationSend: 'SEND',
     sendDocument: 'SEND DOCUMENT',
     noDocumentToDisplay: 'No document to display',
+    fullNameMissing: 'Full Name missing',
+    zipCodeMissing: 'Zip code missing',
     posProcessing: 'Processing Payment',
     posSuccess: 'Payment Successful',
     posProcessingMessage: 'Please wait while we process your payment...',

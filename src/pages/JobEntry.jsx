@@ -110,11 +110,15 @@ const JobEntry = () => {
   const [confirmationNumber, setConfirmationNumber] = useState('');
 
   const [sender, setSender] = useState({
+    fullName: '',
     dni: '',
     cellPhone: '',
     email: '',
     address: '',
+    zip: '',
   });
+
+  const [senderErrors, setSenderErrors] = useState({});
 
   const [recipients, setRecipients] = useState([
     {
@@ -214,6 +218,7 @@ const JobEntry = () => {
 
           setSender((prev) => ({
             ...prev,
+            fullName: parsed.fullName || prev.fullName,
             cellPhone: parsed.phone || prev.cellPhone,
             email: parsed.email || prev.email,
             address: parsed.address
@@ -226,6 +231,7 @@ const JobEntry = () => {
                   .filter(Boolean)
                   .join(', ')
               : prev.address,
+            zip: parsed.address?.zip || prev.zip,
           }));
 
           setPricing((prev) => ({
@@ -240,6 +246,7 @@ const JobEntry = () => {
           const parsed = JSON.parse(profileRaw);
           setSender((prev) => ({
             ...prev,
+            fullName: parsed.fullName || prev.fullName,
             cellPhone: parsed.phone || prev.cellPhone,
             email: parsed.email || prev.email,
             address: parsed.address
@@ -252,6 +259,7 @@ const JobEntry = () => {
                   .filter(Boolean)
                   .join(', ')
               : prev.address,
+            zip: parsed.address?.zip || prev.zip,
           }));
         }
       }
@@ -320,10 +328,18 @@ const JobEntry = () => {
   }, [sender.email, digitalSignatureChecked]);
 
   const handleSenderChange = (e) => {
+    const { name, value } = e.target;
     setSender({
       ...sender,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    // Clear error when user starts typing
+    if (senderErrors[name]) {
+      setSenderErrors({
+        ...senderErrors,
+        [name]: '',
+      });
+    }
   };
 
   const recalculateCost = useCallback(
@@ -483,6 +499,21 @@ const JobEntry = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validate sender fields
+    const errors = {};
+    if (!sender.fullName || sender.fullName.trim() === '') {
+      errors.fullName = t('jobEntry.fullNameMissing');
+    }
+    if (!sender.zip || sender.zip.trim() === '') {
+      errors.zip = t('jobEntry.zipCodeMissing');
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setSenderErrors(errors);
+      return;
+    }
+    
     if (requiresSecondary && !secondaryNotary) {
       alert(t('jobEntry.secondaryRequiredAlert'));
       return;
@@ -635,6 +666,24 @@ const JobEntry = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-gray-900 mb-2">
+                {t('common.fullName')}
+                {senderErrors.fullName && <span className="text-red-600 text-xs ml-2">({senderErrors.fullName})</span>}
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={sender.fullName}
+                onChange={handleSenderChange}
+                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                  senderErrors.fullName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder={t('common.fullName')}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-900 mb-2">
                 {t('jobEntry.dni')}
               </label>
               <input
@@ -689,6 +738,24 @@ const JobEntry = () => {
                 onChange={handleSenderChange}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Calle Principal 123"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-900 mb-2">
+                {t('profile.zipCode')}
+                {senderErrors.zip && <span className="text-red-600 text-xs ml-2">({senderErrors.zip})</span>}
+              </label>
+              <input
+                type="text"
+                name="zip"
+                value={sender.zip}
+                onChange={handleSenderChange}
+                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                  senderErrors.zip ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="15000"
                 required
               />
             </div>
