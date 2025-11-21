@@ -4,6 +4,7 @@ import { loadGoogleMaps } from '../../utils/loadGoogleMaps';
 const ServiceZoneMap = ({ onChange, initialZones }) => {
   const [drawnZones, setDrawnZones] = useState([]);
   const [initialZonesLoaded, setInitialZonesLoaded] = useState(false);
+  const [mapsLoaded, setMapsLoaded] = useState(() => Boolean(window.google && window.google.maps));
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const drawingManagerRef = useRef(null);
@@ -138,35 +139,43 @@ const ServiceZoneMap = ({ onChange, initialZones }) => {
 
   // Check if Google Maps API is loaded, and load it if not
   useEffect(() => {
-    if (!mapRef.current) return;
+    // Skip if map already initialized
+    if (mapInstanceRef.current) {
+      return;
+    }
 
-    if (window.google && window.google.maps) {
-      // Google Maps already loaded, initialize map
-      setTimeout(() => {
-        if (mapRef.current && !mapInstanceRef.current) {
-          initializeMap();
-        }
-      }, 100);
-    } else {
-      // Try to load Google Maps
-      loadGoogleMaps()
-        .then(() => {
-          // Google Maps loaded, wait for mapRef to be ready
-          const checkAndInit = () => {
+    // Wait for mapRef to be available (use requestAnimationFrame for better timing)
+    const initMapWhenReady = () => {
+      if (!mapRef.current) {
+        // Retry if ref is not ready yet
+        requestAnimationFrame(initMapWhenReady);
+        return;
+      }
+
+      // Now mapRef is ready, check Google Maps
+      if (window.google && window.google.maps && !mapInstanceRef.current) {
+        // Google Maps already loaded, initialize map immediately
+        setMapsLoaded(true);
+        initializeMap();
+      } else if (!window.google || !window.google.maps) {
+        // Try to load Google Maps
+        loadGoogleMaps()
+          .then(() => {
+            // Google Maps loaded, update state and initialize map
+            setMapsLoaded(true);
             if (mapRef.current && !mapInstanceRef.current && window.google && window.google.maps) {
               initializeMap();
-            } else if (mapRef.current) {
-              // Retry after a short delay
-              setTimeout(checkAndInit, 100);
             }
-          };
-          checkAndInit();
-        })
-        .catch((error) => {
-          console.warn('Google Maps API not loaded:', error);
-          // Placeholder will be shown by the component's render logic
-        });
-    }
+          })
+          .catch((error) => {
+            console.warn('Google Maps API not loaded:', error);
+            // Placeholder will be shown by the component's render logic
+          });
+      }
+    };
+
+    // Start initialization check with slight delay to ensure DOM is ready
+    requestAnimationFrame(initMapWhenReady);
   }, [initializeMap]);
 
   useEffect(() => {
@@ -249,39 +258,6 @@ const ServiceZoneMap = ({ onChange, initialZones }) => {
     }
   };
 
-  if (!window.google || !window.google.maps) {
-    return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
-        <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-        </svg>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Map Service Zone Selector</h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Draw polygons or circles on the map to define your service areas
-        </p>
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-left">
-          <div className="flex items-start gap-2">
-            <svg className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-amber-900 mb-1">Google Maps API Required</p>
-              <p className="text-xs text-amber-700 mb-2">
-                To enable map-based service zone selection, add your Google Maps API key to the environment configuration.
-              </p>
-              <p className="text-xs text-amber-700 font-mono bg-amber-100 p-2 rounded">
-                VITE_GOOGLE_MAPS_API_KEY=your-api-key
-              </p>
-            </div>
-          </div>
-        </div>
-        <p className="text-xs text-gray-500 mt-4">
-          For now, you can use text input as a temporary alternative
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -299,9 +275,21 @@ const ServiceZoneMap = ({ onChange, initialZones }) => {
         )}
       </div>
       
+      {!mapsLoaded && (
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Cargando mapa...</h3>
+          <p className="text-sm text-gray-600">
+            Por favor espere mientras se carga Google Maps
+          </p>
+        </div>
+      )}
+      
       <div 
         ref={mapRef}
-        className="w-full h-96 rounded-lg border-2 border-gray-300 overflow-hidden shadow-sm"
+        className={`w-full h-96 rounded-lg border-2 border-gray-300 overflow-hidden shadow-sm ${!mapsLoaded ? 'hidden' : ''}`}
       />
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">

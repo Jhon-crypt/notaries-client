@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
 
@@ -5,6 +6,80 @@ const Settings = () => {
   const { t, language, setLanguage } = useLanguage();
   const userRole = localStorage.getItem('userRole');
   const isAdmin = userRole === 'admin';
+  const isNotary = userRole === 'notary';
+  const isClient = userRole === 'client';
+
+  // Load saved data
+  const [accountData, setAccountData] = useState(() => {
+    try {
+      if (isNotary) {
+        const stored = localStorage.getItem('notaryProfile');
+        return stored ? JSON.parse(stored) : { fullName: '', email: '', phone: '', address: {} };
+      } else if (isClient) {
+        const stored = localStorage.getItem('clientProfile');
+        return stored ? JSON.parse(stored) : { fullName: '', email: '', phone: '', address: {} };
+      }
+      return { fullName: '', email: '', phone: '' };
+    } catch {
+      return { fullName: '', email: '', phone: '', address: {} };
+    }
+  });
+
+  const [saveStatus, setSaveStatus] = useState('');
+
+  useEffect(() => {
+    try {
+      if (isNotary) {
+        const stored = localStorage.getItem('notaryProfile');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setAccountData({ ...accountData, ...parsed, address: parsed.address || {} });
+        }
+      } else if (isClient) {
+        const stored = localStorage.getItem('clientProfile');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setAccountData({ ...accountData, ...parsed, address: parsed.address || {} });
+        }
+      }
+    } catch (error) {
+      console.warn('Unable to load profile data', error);
+    }
+  }, [userRole]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith('address.')) {
+      const [, field] = name.split('.');
+      setAccountData((prev) => ({
+        ...prev,
+        address: {
+          ...(prev.address || {}),
+          [field]: value,
+        },
+      }));
+    } else {
+      setAccountData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSaveChanges = () => {
+    try {
+      if (isNotary) {
+        localStorage.setItem('notaryProfile', JSON.stringify(accountData));
+      } else if (isClient) {
+        localStorage.setItem('clientProfile', JSON.stringify(accountData));
+      }
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(''), 3000);
+    }
+  };
   
   return (
     <div className="space-y-6 pb-24 md:pb-6">
@@ -67,7 +142,9 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.fullName')}</label>
             <input
               type="text"
-              defaultValue="Carlic Bolomboy"
+              name="fullName"
+              value={accountData.fullName || ''}
+              onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -75,7 +152,9 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.email')}</label>
             <input
               type="email"
-              defaultValue="carlic@gmail.com"
+              name="email"
+              value={accountData.email || ''}
+              onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -83,11 +162,13 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.phone')}</label>
             <input
               type="tel"
-              defaultValue="+1 234-567-8900"
+              name="phone"
+              value={accountData.phone || ''}
+              onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
-          {userRole === 'notary' && (
+          {(isNotary || isClient) && (
             <>
               <div className="pt-4 border-t border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.addressInfo')}</h3>
@@ -96,6 +177,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.street')}</label>
                     <input
                       type="text"
+                      name="address.street"
+                      value={accountData.address?.street || ''}
+                      onChange={handleInputChange}
                       placeholder={t('profile.streetPlaceholder')}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -104,6 +188,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.number')}</label>
                     <input
                       type="text"
+                      name="address.number"
+                      value={accountData.address?.number || ''}
+                      onChange={handleInputChange}
                       placeholder="123"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -112,6 +199,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.district')}</label>
                     <input
                       type="text"
+                      name="address.district"
+                      value={accountData.address?.district || ''}
+                      onChange={handleInputChange}
                       placeholder="Distrito"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -120,6 +210,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.city')}</label>
                     <input
                       type="text"
+                      name="address.city"
+                      value={accountData.address?.city || ''}
+                      onChange={handleInputChange}
                       placeholder="Ciudad"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -128,6 +221,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.province')}</label>
                     <input
                       type="text"
+                      name="address.province"
+                      value={accountData.address?.province || ''}
+                      onChange={handleInputChange}
                       placeholder="Provincia"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -136,6 +232,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.department')}</label>
                     <input
                       type="text"
+                      name="address.department"
+                      value={accountData.address?.department || ''}
+                      onChange={handleInputChange}
                       placeholder="Departamento"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -144,6 +243,9 @@ const Settings = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.zipCode')}</label>
                     <input
                       type="text"
+                      name="address.zip"
+                      value={accountData.address?.zip || ''}
+                      onChange={handleInputChange}
                       placeholder="15000"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
@@ -242,8 +344,17 @@ const Settings = () => {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
-        <button className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
+      <div className="flex justify-end items-center gap-4">
+        {saveStatus === 'success' && (
+          <span className="text-green-600 text-sm font-medium">{t('common.saved')}</span>
+        )}
+        {saveStatus === 'error' && (
+          <span className="text-red-600 text-sm font-medium">{t('common.error')}</span>
+        )}
+        <button
+          onClick={handleSaveChanges}
+          className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+        >
           {t('settings.saveChanges')}
         </button>
       </div>

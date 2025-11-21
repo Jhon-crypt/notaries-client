@@ -41,6 +41,7 @@ export const es = {
     allRightsReserved: 'Todos los derechos reservados',
     accessDenied: 'Acceso Denegado',
     adminOnlyAccess: 'Esta página solo es accesible para administradores.',
+    saved: 'Guardado',
   },
 
   // Menú de navegación

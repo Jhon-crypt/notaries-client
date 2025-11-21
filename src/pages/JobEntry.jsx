@@ -202,35 +202,61 @@ const JobEntry = () => {
   const [digitalSignatureChecked, setDigitalSignatureChecked] = useState(false);
 
   useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    
     try {
-      const profileRaw = localStorage.getItem('notaryProfile');
-      if (profileRaw) {
-        const parsed = JSON.parse(profileRaw);
-        setNotaryProfile(parsed);
+      // Load profile based on user role
+      if (userRole === 'notary') {
+        const profileRaw = localStorage.getItem('notaryProfile');
+        if (profileRaw) {
+          const parsed = JSON.parse(profileRaw);
+          setNotaryProfile(parsed);
 
-        setSender((prev) => ({
-          ...prev,
-          cellPhone: parsed.phone || prev.cellPhone,
-          email: parsed.email || prev.email,
-          address: parsed.address
-            ? [
-                parsed.address.street,
-                parsed.address.number,
-                parsed.address.district,
-                parsed.address.province,
-              ]
-                .filter(Boolean)
-                .join(', ')
-            : prev.address,
-        }));
+          setSender((prev) => ({
+            ...prev,
+            cellPhone: parsed.phone || prev.cellPhone,
+            email: parsed.email || prev.email,
+            address: parsed.address
+              ? [
+                  parsed.address.street,
+                  parsed.address.number,
+                  parsed.address.district,
+                  parsed.address.province,
+                ]
+                  .filter(Boolean)
+                  .join(', ')
+              : prev.address,
+          }));
 
-        setPricing((prev) => ({
-          ...prev,
-          baseCharge: parsed.baseCharge ? parseFloat(parsed.baseCharge) || prev.baseCharge : prev.baseCharge,
-        }));
+          setPricing((prev) => ({
+            ...prev,
+            baseCharge: parsed.baseCharge ? parseFloat(parsed.baseCharge) || prev.baseCharge : prev.baseCharge,
+          }));
+        }
+      } else if (userRole === 'client') {
+        // Load client profile for sender info
+        const profileRaw = localStorage.getItem('clientProfile');
+        if (profileRaw) {
+          const parsed = JSON.parse(profileRaw);
+          setSender((prev) => ({
+            ...prev,
+            cellPhone: parsed.phone || prev.cellPhone,
+            email: parsed.email || prev.email,
+            address: parsed.address
+              ? [
+                  parsed.address.street,
+                  parsed.address.number,
+                  parsed.address.district,
+                  parsed.address.province,
+                ]
+                  .filter(Boolean)
+                  .join(', ')
+              : prev.address,
+          }));
+        }
       }
     } catch (error) {
-      console.warn('Unable to load notary profile', error);
+      console.warn('Unable to load profile', error);
     }
 
     try {
