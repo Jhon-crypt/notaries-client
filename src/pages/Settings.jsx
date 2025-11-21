@@ -163,7 +163,7 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.currentPassword')}</label>
             <input
               type="password"
-              placeholder="Enter current password"
+              placeholder={t('settings.currentPasswordPlaceholder')}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -171,7 +171,7 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('settings.newPassword')}</label>
             <input
               type="password"
-              placeholder="Enter new password"
+              placeholder={t('settings.newPasswordPlaceholder')}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -179,7 +179,7 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('common.confirmPassword')}</label>
             <input
               type="password"
-              placeholder="Confirm new password"
+              placeholder={t('settings.confirmPasswordPlaceholder')}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
@@ -188,30 +188,30 @@ const Settings = () => {
 
       {/* Advanced System Setup (Admins Only) */}
       {isAdmin && (
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">{t('admin.systemParametersTitle')}</h2>
-              <p className="text-sm text-gray-600 mt-1">{t('admin.systemParametersDescription')}</p>
-            </div>
-            <Link
-              to="/dashboard/system-setup"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
-            >
-              {t('common.viewAll')}
-            </Link>
+      <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">{t('admin.systemParametersTitle')}</h2>
+            <p className="text-sm text-gray-600 mt-1">{t('admin.systemParametersDescription')}</p>
           </div>
+          <Link
+            to="/dashboard/system-setup"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors"
+          >
+            {t('common.viewAll')}
+          </Link>
         </div>
+      </div>
       )}
 
       {/* Notification Settings */}
       <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Notifications</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('settings.notificationsTitle')}</h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Email Notifications</p>
-              <p className="text-sm text-gray-500">Receive email updates about your documents</p>
+              <p className="font-medium text-gray-900">{t('settings.emailNotifications')}</p>
+              <p className="text-sm text-gray-500">{t('settings.emailNotificationsDescription')}</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -220,8 +220,8 @@ const Settings = () => {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Push Notifications</p>
-              <p className="text-sm text-gray-500">Receive push notifications on your device</p>
+              <p className="font-medium text-gray-900">{t('settings.pushNotifications')}</p>
+              <p className="text-sm text-gray-500">{t('settings.pushNotificationsDescription')}</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -230,8 +230,8 @@ const Settings = () => {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">SMS Notifications</p>
-              <p className="text-sm text-gray-500">Receive text messages for important updates</p>
+              <p className="font-medium text-gray-900">{t('settings.smsNotifications')}</p>
+              <p className="text-sm text-gray-500">{t('settings.smsNotificationsDescription')}</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" />
@@ -244,7 +244,7 @@ const Settings = () => {
       {/* Save Button */}
       <div className="flex justify-end">
         <button className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
-          Save Changes
+          {t('settings.saveChanges')}
         </button>
       </div>
     </div>
