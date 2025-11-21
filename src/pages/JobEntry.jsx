@@ -102,12 +102,6 @@ const JobEntry = () => {
   const [notaryProfile, setNotaryProfile] = useState(null);
   const [serviceZones, setServiceZones] = useState([]);
   const [pricing, setPricing] = useState(DEFAULT_PRICING);
-  const [workingHours, setWorkingHours] = useState({
-    start: '09:00',
-    end: '18:00',
-    cutoff: '16:00',
-    weekend: false,
-  });
   const [secondaryFilters, setSecondaryFilters] = useState({
     query: '',
     maxDistance: 15,
@@ -234,13 +228,6 @@ const JobEntry = () => {
           ...prev,
           baseCharge: parsed.baseCharge ? parseFloat(parsed.baseCharge) || prev.baseCharge : prev.baseCharge,
         }));
-
-        setWorkingHours({
-          start: parsed.workingHoursStart || '09:00',
-          end: parsed.workingHoursEnd || '18:00',
-          cutoff: parsed.sameDayCutoff || '16:00',
-          weekend: Boolean(parsed.weekendDeliveries),
-        });
       }
     } catch (error) {
       console.warn('Unable to load notary profile', error);
@@ -617,8 +604,8 @@ const JobEntry = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6">
+          <div className="space-y-6">
             {/* Recipients Table */}
             <div className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4 sm:p-6 space-y-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -1004,60 +991,6 @@ const JobEntry = () => {
                 </svg>
                 {t('jobEntry.addRecipient')}
               </button>
-            </div>
-          </div>
-
-          {/* Coverage Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5 sm:sticky sm:top-6 space-y-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900">
-                    {t('jobEntry.coverageSummaryTitle')}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t('jobEntry.coverageSummarySubtitle')}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
-                  S/. {parseFloat(pricing.baseCharge || DEFAULT_PRICING.baseCharge).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="space-y-2 text-sm text-gray-700">
-                <p>
-                  <span className="font-semibold text-gray-900">{t('jobEntry.coverageWorkingHoursLabel')}:</span>{' '}
-                  {t('jobEntry.coverageWorkingHoursValue', { start: workingHours.start, end: workingHours.end })}
-                </p>
-                <p>
-                  <span className="font-semibold text-gray-900">{t('jobEntry.cutoffLabel')}:</span>{' '}
-                  {t('jobEntry.cutoffValue', { cutoff: workingHours.cutoff })}
-                </p>
-                <p className={`flex items-center gap-2 ${workingHours.weekend ? 'text-green-600' : 'text-gray-600'}`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {workingHours.weekend ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    )}
-                  </svg>
-                  {workingHours.weekend ? t('jobEntry.weekendAllowed') : t('jobEntry.weekendNotAllowed')}
-                </p>
-              </div>
-
-              <div className="border-t border-dashed border-gray-200 pt-3 text-xs text-gray-600 space-y-2">
-                <p>
-                  {serviceZones.length
-                    ? t('jobEntry.serviceZonesDefined', { count: serviceZones.length })
-                    : t('jobEntry.serviceZonesMissing')}
-                </p>
-                <p>
-                  {t('jobEntry.pricingHint', {
-                    fast: pricing.fastSurchargePct,
-                    urgent: pricing.urgentSurchargePct,
-                  })}
-                </p>
-              </div>
             </div>
           </div>
         </div>
