@@ -509,8 +509,85 @@ const JobEntry = () => {
     alert('Documento certificado enviado exitosamente');
   };
 
-  // Get the first PDF file for display
-  const displayPdfFile = recipients.find(r => r.pdfFile)?.pdfFile;
+  // Get the first PDF file for display, or create a mock PDF
+  const getDisplayPdf = useCallback(() => {
+    const uploadedPdf = recipients.find(r => r.pdfFile)?.pdfFile;
+    if (uploadedPdf) {
+      return uploadedPdf;
+    }
+    
+    // Create a mock PDF document as HTML (will be converted to blob URL)
+    const mockPdfHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body {
+              margin: 0;
+              padding: 40px;
+              font-family: 'Times New Roman', serif;
+              background: white;
+              color: #000;
+            }
+            .document {
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            .header {
+              border-bottom: 2px solid #333;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            .content {
+              font-size: 14px;
+              line-height: 1.8;
+              margin-bottom: 30px;
+            }
+            .footer {
+              margin-top: 50px;
+              padding-top: 20px;
+              border-top: 1px solid #ccc;
+              font-size: 12px;
+              text-align: center;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="document">
+            <div class="header">
+              <div class="title">DOCUMENTO NOTARIAL</div>
+            </div>
+            <div class="content">
+              <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
+              <p><strong>Confirmación:</strong> ${confirmationNumber || 'CN-XXXXXX'}</p>
+              <br>
+              <p>Este es un documento de ejemplo que ha sido certificado mediante el sistema de notarización digital.</p>
+              <br>
+              <p>El documento contiene información relevante sobre el proceso de notarización y certificación realizado.</p>
+              <br>
+              <p>Este documento ha sido debidamente autenticado y certificado conforme a las normas legales vigentes.</p>
+            </div>
+            <div class="footer">
+              <p>Documento certificado - Sistema de Notarización Digital</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    const blob = new Blob([mockPdfHtml], { type: 'text/html' });
+    return blob;
+  }, [recipients, confirmationNumber]);
+
+  const displayPdfFile = getDisplayPdf();
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-full">
@@ -1197,51 +1274,42 @@ const JobEntry = () => {
 
             {/* PDF Document Display with Certification Overlay */}
             <div className="relative bg-gray-100 p-4 sm:p-6">
-              {displayPdfFile ? (
-                <div className="relative bg-white rounded-lg shadow-lg overflow-hidden" style={{ minHeight: '600px' }}>
-                  {/* PDF Viewer */}
-                  <iframe
-                    src={URL.createObjectURL(displayPdfFile)}
-                    className="w-full"
-                    style={{ height: '700px' }}
-                    title="Certified Document Preview"
-                  />
-                  
-                  {/* Certification Text Overlay - Blue */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-blue-600 p-6 text-white shadow-lg">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0">
-                        <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-lg font-bold mb-2">DOCUMENTO CERTIFICADO</h4>
-                        <p className="text-sm mb-2">
-                          {t('jobEntry.certificationBody')}
+              <div className="relative bg-white rounded-lg shadow-lg overflow-hidden" style={{ minHeight: '600px' }}>
+                {/* PDF Viewer */}
+                <iframe
+                  src={URL.createObjectURL(displayPdfFile)}
+                  className="w-full"
+                  style={{ height: '700px' }}
+                  title="Certified Document Preview"
+                />
+                
+                {/* Certification Text Overlay - Blue */}
+                <div className="absolute bottom-0 left-0 right-0 bg-blue-600 p-6 text-white shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold mb-2">DOCUMENTO CERTIFICADO</h4>
+                      <p className="text-sm mb-2">
+                        {t('jobEntry.certificationBody')}
+                      </p>
+                      <ul className="text-xs space-y-1 opacity-90">
+                        <li>✓ {t('jobEntry.certificationChecklist1')}</li>
+                        <li>✓ {t('jobEntry.certificationChecklist2')}</li>
+                        <li>✓ {t('jobEntry.certificationChecklist3')}</li>
+                      </ul>
+                      {confirmationNumber && (
+                        <p className="text-xs mt-3 font-semibold">
+                          Número de Confirmación: {confirmationNumber}
                         </p>
-                        <ul className="text-xs space-y-1 opacity-90">
-                          <li>✓ {t('jobEntry.certificationChecklist1')}</li>
-                          <li>✓ {t('jobEntry.certificationChecklist2')}</li>
-                          <li>✓ {t('jobEntry.certificationChecklist3')}</li>
-                        </ul>
-                        {confirmationNumber && (
-                          <p className="text-xs mt-3 font-semibold">
-                            Número de Confirmación: {confirmationNumber}
-                          </p>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-                  <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p className="text-gray-600">{t('jobEntry.noDocumentToDisplay')}</p>
-                </div>
-              )}
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -1256,8 +1324,7 @@ const JobEntry = () => {
               <button
                 type="button"
                 onClick={handleSendDocument}
-                disabled={!displayPdfFile}
-                className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
